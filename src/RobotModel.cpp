@@ -447,6 +447,36 @@ bool RobotModel::getJointLimits(std::vector< double > &lower_limits, std::vector
     return true;
 }
 
+
+bool RobotModel::getJointLimits(base::JointLimits &limits)
+{
+    std::vector< std::pair<std::string, urdf::Joint> > planning_groups_joints_names;
+    std::string base_link, tip_link;
+    if(!getPlanningGroupJointinformation(planning_group_name_, planning_groups_joints_names, base_link, tip_link))
+        return false;
+
+    limits.clear();
+
+    for(auto it = planning_groups_joints_names.begin(); it != planning_groups_joints_names.end(); it++)
+    {
+        limits.names.push_back(it->first);
+
+        base::JointLimitRange range;
+        range.min.position      =  it->second.limits->lower;
+        range.max.position      =  it->second.limits->upper;
+        range.min.speed         = -it->second.limits->velocity;
+        range.max.speed         =  it->second.limits->velocity;
+        range.min.effort        = -it->second.limits->effort;
+        range.max.effort        =  it->second.limits->effort;
+
+        limits.elements.push_back(range);
+    }
+    assert(limits.size() == planning_groups_joints_names.size());
+    return true;
+}
+
+
+
 /*
 Manipulability Analysis
 

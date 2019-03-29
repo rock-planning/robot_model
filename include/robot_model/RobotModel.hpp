@@ -43,6 +43,7 @@
 #include <base-logging/Logging.hpp>
 #include <base/Pose.hpp>
 #include <base/samples/Joints.hpp>
+#include <base/JointLimits.hpp>
 
 #include <collision_detection/abstract/AbstractCollisionDetection.hpp>
 #include <kinematics_library/KinematicsFactory.hpp>
@@ -188,6 +189,8 @@ class RobotModel
         std::string getPlanningGroupName(){return planning_group_name_;}
 
         bool getJointLimits(std::vector< double > &lower_limits, std::vector< double > &upper_limits);
+
+        bool getJointLimits(base::JointLimits &limits);
 
         kinematics_library::AbstractKinematicPtr robot_kinematics_;
 
