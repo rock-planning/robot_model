@@ -1,0 +1,21 @@
+<package>
+    <description>"Robot Model"
+    Robot model holds the information on robot states
+    </description>
+    <license></license>
+    <url>https://git.hb.dfki.de/dfki-planning/robot_model.git</url>
+    <logo>http://</logo>
+    <author>Sankaranarayanan Natarajan/sankar.natarajan@dfki.de</author>
+    <depend package="base/cmake" />
+    <depend package="planning/kinematics_library" />
+    <depend package="planning/collision_detection" />
+    <depend package="slam/octomap" />
+    <name>robot_model</name>
+    <maintainer>Sankar Natarajan/sankar.natarajan@dfki.de</maintainer>
+    <stage>-1</stage>
+    <keywords>
+        <keyword>planning</keyword>
+    </keywords>
+    <activity>active</activity>
+    <use>single project</use>
+</package>
