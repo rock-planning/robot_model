@@ -1,23 +1,24 @@
 robot_model
 =============
-Robot Model
+Robot Model is responsible for holding the information regarding the robot joints and links.
+The robot model could also be used for checking collision detection.
 
+# Requirements
 
+![robotmodel](/uploads/97ab9ad5b73813fcf8b4bd2f9ebc2c29/robotmodel.png)
 
-License
--------
-dummy-license
+As shown in the above figure this package depends on collision detection and kinematics
+libraries:
+- [Kinematics Library](https://git.hb.dfki.de/dfki-planning/kinematics_library)
+- [Collision Detection Library](https://git.hb.dfki.de/dfki-planning/collision_detection)
+
 
 Installation
 ------------
-The easiest way to build and install this package is to use Rock's build system.
-See [this page](http://rock-robotics.org/stable/documentation/installation.html)
-on how to install Rock.
+On any Unix based operating systems, you can install this package. A simple way to install this package is to
+use [Rock](https://www.rock-robotics.org/) framework. As this package is dependent only on the [base-types](https://github.com/rock-core/base-types)
+of the [Rock](https://www.rock-robotics.org/) framework, it can also be build independent of the [Rock](https://www.rock-robotics.org/) framework.
 
-However, if you feel that it's too heavy for your needs, Rock aims at having
-most of its "library" packages (such as this one) to follow best practices. See
-[this page](http://rock-robotics.org/stable/documentation/packages/outside_of_rock.html)
-for installation instructions outside of Rock.
 
 Rock CMake Macros
 -----------------
