@@ -1,17 +1,6 @@
 #ifndef ROBOTMODEL_HPP
 #define ROBOTMODEL_HPP
 
-#include <string>
-#include <vector>
-
-#include <fstream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <dlfcn.h>
-#include <stdlib.h>
-#include <time.h>
-
-
 #include <kdl/chain.hpp>
 #include <kdl/chainfksolver.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
@@ -36,7 +25,7 @@
 #include <boost/filesystem/path.hpp>
 
 
-
+#include "robot_model/RobotModelConfig.hpp"
 #include "robot_model/RobotLink.hpp"
 #include "robot_model/RobotJoint.hpp"
 
@@ -54,21 +43,6 @@
 namespace robot_model
 {
 
-template<typename to, typename from>
-to lexical_cast(from const &x)
-{
-    std::stringstream os;
-    to ret;
-    os << x;
-    os >> ret;
-    return ret;
-}
-
-enum USESELFCOLLISION
-{
-    VISUAL, COLLISION
-};
-
 class RobotState
 {
     public:
@@ -81,8 +55,7 @@ class RobotModel
 {
 
     public:
-        RobotModel(std::string urdf_file, std::string srdf_file, std::string planning_group_name,
-        double link_padding = 1.00);
+        RobotModel(RobotModelConfig robot_model_config, double link_padding = 1.00);
 
         bool initialization();    
 

@@ -16,12 +16,11 @@ bool isLinkListed(const urdf::LinkSharedPtr &remove_link)
 
 /////////////////////////////////////////////////End of out of class members and variables////////////////////////////////////
 
-RobotModel::RobotModel(std::string urdf_file, std::string srdf_file, std::string planning_group_name,
-                       double link_padding  )
+RobotModel::RobotModel(RobotModelConfig robot_model_config, double link_padding  )
 {
-    urdf_file_abs_path_  = urdf_file;
-    srdf_file_abs_path_  = srdf_file;
-    planning_group_name_ = planning_group_name;
+    urdf_file_abs_path_  = robot_model_config.urdf_file;
+    srdf_file_abs_path_  = robot_model_config.srdf_file;
+    planning_group_name_ = robot_model_config.planning_group_name;
     link_padding_        = link_padding;
 }
 
