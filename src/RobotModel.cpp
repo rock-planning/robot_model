@@ -533,9 +533,7 @@ void RobotModel::computeJacobain(const std::string &chain_root_link,const  std::
     #endif
 }
 
-bool RobotModel::getPlanningGroupJointinformation(const std::string planningGroupName,
-                                                  std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints,
-                                                  std::string &base_link, std::string &tip_link)
+bool RobotModel::getPlanningGroupBaseTipName(const std::string &planningGroupName,  std::string &base_link, std::string &tip_link)
 {
     //    planning_groups_joints are in  order from base to tip! very important
 
@@ -551,17 +549,27 @@ bool RobotModel::getPlanningGroupJointinformation(const std::string planningGrou
         }
     }
 
-    std::string joint_name;
-
     for(std::size_t i=0;i<planning_group.chains_.size();i++)
     {
-        base_link=planning_group.chains_.at(i).first;
-        tip_link=planning_group.chains_.at(i).second;
+        base_link = planning_group.chains_.at(i).first;
+        tip_link = planning_group.chains_.at(i).second;
     }
 
     if(!kdl_tree_.getChain(base_link, tip_link , kdl_chain_))
-	return false;
+        return false;
+    return true;
+}
 
+bool RobotModel::getPlanningGroupJointinformation(const std::string planningGroupName,
+                                                  std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints,
+                                                  std::string &base_link, std::string &tip_link)
+{
+    
+    if(!getPlanningGroupBaseTipName(planningGroupName,  base_link, tip_link))
+        return false;
+
+    std::string joint_name;
+    
     urdf::Joint planning_group_joint;
 
     for(std::size_t i=0;i<kdl_chain_.segments.size();i++ )
@@ -573,6 +581,36 @@ bool RobotModel::getPlanningGroupJointinformation(const std::string planningGrou
             planning_group_joint=*(urdf_model_->getJoint(joint_name).get());
 
             planning_groups_joints.push_back(std::make_pair(joint_name ,planning_group_joint )   );
+        }
+    }
+    
+    return true;
+}
+
+bool RobotModel::getPlanningGroupJointinformation(const std::string planningGroupName,  base::samples::Joints &planning_groups_joints)
+{
+    std::string joint_name;
+    std::string base_link, tip_link;
+   
+    if(!getPlanningGroupBaseTipName(planningGroupName,  base_link, tip_link))
+        return false;
+
+    urdf::Joint planning_group_joint;    
+       
+
+    for(std::size_t i=0;i<kdl_chain_.segments.size();i++ )
+    {
+        //KDL JointType: RotAxis,RotX,RotY,RotZ,TransAxis,TransX,TransY,TransZ,None;
+        if(! (kdl_chain_.getSegment(i).getJoint().getType()==KDL::Joint::None) )
+        {
+            joint_name=kdl_chain_.getSegment(i).getJoint().getName();
+            planning_group_joint=*(urdf_model_->getJoint(joint_name).get());
+
+            planning_groups_joints.names.push_back(joint_name);
+            base::JointState joint_state;
+            joint_state.position = getRobotState().robot_joints_[joint_name].getJointValue();
+            
+            planning_groups_joints.elements.push_back(joint_state);            
         }
     }
     

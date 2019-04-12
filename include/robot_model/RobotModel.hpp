@@ -59,12 +59,12 @@ class RobotModel
 
         bool initialization();    
 
-        bool getPlanningGroupJointinformation(  const std::string  planningGroupName,
-        std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints,
-        std::string &base_link,  std::string &tip_link);
+        bool getPlanningGroupJointinformation(  const std::string  planningGroupName, std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints,
+                                                std::string &base_link,  std::string &tip_link);
 
-        void getPlanningGroupJointsName(const std::string planningGroupName,
-        std::vector< std::string> &planning_group_joints_name);
+        bool getPlanningGroupJointinformation(const std::string planningGroupName,  base::samples::Joints &planning_groups_joints);
+
+        void getPlanningGroupJointsName(const std::string planningGroupName, std::vector< std::string> &planning_group_joints_name);
 
         void setSRDF(boost::shared_ptr<srdf::Model> &srdf_model_);
 
@@ -174,6 +174,8 @@ class RobotModel
         bool getRobotCollisionInfo(std::vector<collision_detection::DistanceInformation> &contact_info);
 
         void getRobotDistanceToCollisionInfo(std::vector<collision_detection::DistanceInformation> &distance_info);
+        
+        kinematics_library::AbstractKinematicPtr getKinematicsSolver(){return robot_kinematics_;}
 
     private :
 
@@ -199,6 +201,8 @@ class RobotModel
         bool initializeLinksCollisions();
 
         void kdlFrameToEigenMatrix(KDL::Frame &frame,Eigen::Isometry3f &transform);
+        
+        bool getPlanningGroupBaseTipName(const std::string &planningGroupName,  std::string &base_link, std::string &tip_link);
 
 
 
