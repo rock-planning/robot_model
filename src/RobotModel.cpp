@@ -49,9 +49,10 @@ bool RobotModel::initialiseURDFandSRDF()
         urdf_model_ = urdf::parseURDF(xml_string);
         if(urdf_model_.get() == NULL)
         {
-        LOG_ERROR("[RobotModel] Error while getting urdf model. urdf_model is empty");
-                return false;
+            LOG_ERROR("[RobotModel] Error while getting urdf model. urdf_model is empty");
+            return false;
         }
+        world_frame_ = urdf_model_->getRoot()->name;
     }
     else
     {

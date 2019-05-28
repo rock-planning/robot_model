@@ -176,6 +176,8 @@ class RobotModel
         void getRobotDistanceToCollisionInfo(std::vector<collision_detection::DistanceInformation> &distance_info);
         
         kinematics_library::AbstractKinematicPtr getKinematicsSolver(){return robot_kinematics_;}
+        
+        std::string getWorldFrameName(){return world_frame_;}
 
     private :
 
@@ -188,6 +190,7 @@ class RobotModel
         urdf::ModelInterfaceSharedPtr urdf_model_;
         std::string urdf_file_abs_path_;
         std::string srdf_file_abs_path_;
+        std::string world_frame_;
         collision_detection::AbstractCollisionPtr robot_collision_detector_, world_collision_detector_;
 
         bool initialiseURDFandSRDF();
