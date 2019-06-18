@@ -59,10 +59,14 @@ class RobotModel
 
         bool initialization();    
 
-        bool getPlanningGroupJointinformation(  const std::string  planningGroupName, std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints,
-                                                std::string &base_link,  std::string &tip_link);
+        bool getPlanningGroupJointInformation(  const std::string  planningGroupName, std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints,
+                                                std::vector< std::string> &planning_group_joints_name);
+        
+// //         bool getPlanningGroupJointInformation(const std::string planningGroupName, std::vector< std::pair<std::string,urdf::Joint> >&planning_group_joints,
+//                                               std::vector< std::string> &planning_group_joints_name);
+        bool getPlanningGroupJointInformation(const std::string planningGroupName, std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints);
 
-        bool getPlanningGroupJointinformation(const std::string planningGroupName,  base::samples::Joints &planning_groups_joints);
+        bool getPlanningGroupJointInformation(const std::string planningGroupName,  base::samples::Joints &planning_groups_joints);
 
         void getPlanningGroupJointsName(const std::string planningGroupName, std::vector< std::string> &planning_group_joints_name);
 
@@ -99,7 +103,7 @@ class RobotModel
         //void ConvertPoseBetweenFrames( const std::string B_Frame_Name, const base::samples::RigidBodyState &F_B_C , const std::string &A_Frame_Name ,
         //				   base::samples::RigidBodyState &F_A_C );
 
-        void ConvertPoseBetweenFrames( const std::string B_Frame_Name, const KDL::Frame &F_B_C , const std::string &A_Frame_Name ,KDL::Frame &F_A_C );
+        void convertPoseBetweenFrames( const std::string B_Frame_Name, const KDL::Frame &F_B_C , const std::string &A_Frame_Name ,KDL::Frame &F_A_C );
 
         void getRobotCollisions(std::vector<urdf::CollisionSharedPtr > &  robotCollisions);
 
@@ -178,6 +182,10 @@ class RobotModel
         kinematics_library::AbstractKinematicPtr getKinematicsSolver(){return robot_kinematics_;}
         
         std::string getWorldFrameName(){return world_frame_;}
+        
+        std::string getBaseFrameName(){return base_frame_;}
+        
+        std::string getTipFrameName(){return tip_frame_;}
 
     private :
 
@@ -190,7 +198,7 @@ class RobotModel
         urdf::ModelInterfaceSharedPtr urdf_model_;
         std::string urdf_file_abs_path_;
         std::string srdf_file_abs_path_;
-        std::string world_frame_;
+        std::string world_frame_, base_frame_, tip_frame_;
         collision_detection::AbstractCollisionPtr robot_collision_detector_, world_collision_detector_;
 
         bool initialiseURDFandSRDF();
@@ -205,7 +213,7 @@ class RobotModel
 
         void kdlFrameToEigenMatrix(KDL::Frame &frame,Eigen::Isometry3f &transform);
         
-        bool getPlanningGroupBaseTipName(const std::string &planningGroupName,  std::string &base_link, std::string &tip_link);
+        bool getPlanningGroupBaseTipName(const std::string &planning_group_name,  std::string &base_link, std::string &tip_link);
 
 
 

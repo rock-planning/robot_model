@@ -73,6 +73,11 @@ bool RobotModel::initialiseURDFandSRDF()
         LOG_ERROR("[RobotModel] Error while initialising kdl treey");
         return false;
     }
+    
+    // get base and tip frame
+    if(!getPlanningGroupBaseTipName(planning_group_name_, base_frame_, tip_frame_))
+        return false;
+    
     return true;
 }
 
@@ -288,7 +293,7 @@ void RobotModel::settingVisitedFlagLinkToFalse(std::vector<std::string> visted_l
 
 void RobotModel::setDisabledEnvironmentCollision(std::vector <std::pair<std::string,std::string> > disabled_collision_pair)
 {
-     for(int i = 0; i < disabled_collision_pair.size(); i++)
+     for(std::size_t i = 0; i < disabled_collision_pair.size(); i++)
      {
         srdf::Model::DisabledCollision disabled_pair;
         disabled_pair.link1_ = disabled_collision_pair.at(i).first;
@@ -427,22 +432,22 @@ boost::filesystem::path RobotModel::resolve_path( const boost::filesystem::path&
 
 bool RobotModel::getJointLimits(std::vector< double > &lower_limits, std::vector< double > &upper_limits)
 {
-    std::vector< std::pair<std::string, urdf::Joint> > planning_groups_joints_names;
-    std::string base_link, tip_link;
-    if(!getPlanningGroupJointinformation(planning_group_name_, planning_groups_joints_names, base_link, tip_link))
+    std::vector< std::pair<std::string, urdf::Joint> > planning_groups_joints;
+    
+    if(!getPlanningGroupJointInformation(planning_group_name_, planning_groups_joints))
         return false;
     //lower_limits.resize(planning_groups_joints_names.size());
     //upper_limits.resize(planning_groups_joints_names.size());
     lower_limits.clear();
     upper_limits.clear();
 
-    for(auto it = planning_groups_joints_names.begin(); it != planning_groups_joints_names.end(); it++)
+    for(auto it = planning_groups_joints.begin(); it != planning_groups_joints.end(); it++)
     {
         lower_limits.push_back(it->second.limits->lower)  ;
         upper_limits.push_back(it->second.limits->upper)  ;	
     }
 
-    assert(lower_limits.size() == planning_groups_joints_names.size());
+    assert(lower_limits.size() == planning_groups_joints.size());
 
     return true;
 }
@@ -450,14 +455,14 @@ bool RobotModel::getJointLimits(std::vector< double > &lower_limits, std::vector
 
 bool RobotModel::getJointLimits(base::JointLimits &limits)
 {
-    std::vector< std::pair<std::string, urdf::Joint> > planning_groups_joints_names;
-    std::string base_link, tip_link;
-    if(!getPlanningGroupJointinformation(planning_group_name_, planning_groups_joints_names, base_link, tip_link))
+    std::vector< std::pair<std::string, urdf::Joint> > planning_groups_joints;
+    
+    if(!getPlanningGroupJointInformation(planning_group_name_, planning_groups_joints))
         return false;
 
     limits.clear();
 
-    for(auto it = planning_groups_joints_names.begin(); it != planning_groups_joints_names.end(); it++)
+    for(auto it = planning_groups_joints.begin(); it != planning_groups_joints.end(); it++)
     {
         limits.names.push_back(it->first);
 
@@ -471,7 +476,7 @@ bool RobotModel::getJointLimits(base::JointLimits &limits)
 
         limits.elements.push_back(range);
     }
-    assert(limits.size() == planning_groups_joints_names.size());
+    assert(limits.size() == planning_groups_joints.size());
     return true;
 }
 
@@ -534,7 +539,7 @@ void RobotModel::computeJacobain(const std::string &chain_root_link,const  std::
     #endif
 }
 
-bool RobotModel::getPlanningGroupBaseTipName(const std::string &planningGroupName,  std::string &base_link, std::string &tip_link)
+bool RobotModel::getPlanningGroupBaseTipName(const std::string &planning_group_name,  std::string &base_link, std::string &tip_link)
 {
     //    planning_groups_joints are in  order from base to tip! very important
 
@@ -543,7 +548,7 @@ bool RobotModel::getPlanningGroupBaseTipName(const std::string &planningGroupNam
 
     for(std::size_t i=0;i<srdf_groups.size();i++)
     {
-        if( planningGroupName.compare(srdf_groups.at(i).name_) ==0 )
+        if( planning_group_name.compare(srdf_groups.at(i).name_) ==0 )
         {
             planning_group=srdf_groups.at(i);
             break;
@@ -561,18 +566,18 @@ bool RobotModel::getPlanningGroupBaseTipName(const std::string &planningGroupNam
     return true;
 }
 
-bool RobotModel::getPlanningGroupJointinformation(const std::string planningGroupName,
+bool RobotModel::getPlanningGroupJointInformation(const std::string planningGroupName,
                                                   std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints,
-                                                  std::string &base_link, std::string &tip_link)
+                                                  std::vector< std::string> &planning_group_joints_name)
 {
-    
-    if(!getPlanningGroupBaseTipName(planningGroupName,  base_link, tip_link))
-        return false;
-
     std::string joint_name;
     
     urdf::Joint planning_group_joint;
-
+    planning_group_joints_name.clear();
+    
+    if(!kdl_tree_.getChain(base_frame_, tip_frame_ , kdl_chain_))
+        return false;
+    
     for(std::size_t i=0;i<kdl_chain_.segments.size();i++ )
     {
         //KDL JointType: RotAxis,RotX,RotY,RotZ,TransAxis,TransX,TransY,TransZ,None;
@@ -582,22 +587,47 @@ bool RobotModel::getPlanningGroupJointinformation(const std::string planningGrou
             planning_group_joint=*(urdf_model_->getJoint(joint_name).get());
 
             planning_groups_joints.push_back(std::make_pair(joint_name ,planning_group_joint )   );
+            planning_group_joints_name.push_back(joint_name);
         }
     }
     
     return true;
 }
 
-bool RobotModel::getPlanningGroupJointinformation(const std::string planningGroupName,  base::samples::Joints &planning_groups_joints)
+bool RobotModel::getPlanningGroupJointInformation(const std::string planningGroupName,
+                                                  std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints)
+{
+    std::string joint_name;    
+    urdf::Joint planning_group_joint;   
+    
+    if(!kdl_tree_.getChain(base_frame_, tip_frame_ , kdl_chain_))
+        return false;
+
+    for(std::size_t i=0;i<kdl_chain_.segments.size();i++ )
+    {
+        //KDL JointType: RotAxis,RotX,RotY,RotZ,TransAxis,TransX,TransY,TransZ,None;
+        if(! (kdl_chain_.getSegment(i).getJoint().getType()==KDL::Joint::None) )
+        {
+            joint_name=kdl_chain_.getSegment(i).getJoint().getName();
+            planning_group_joint=*(urdf_model_->getJoint(joint_name).get());
+
+            planning_groups_joints.push_back(std::make_pair(joint_name ,planning_group_joint )   );            
+        }
+    }
+    
+    return true;
+}
+
+
+
+bool RobotModel::getPlanningGroupJointInformation(const std::string planningGroupName,  base::samples::Joints &planning_groups_joints)
 {
     std::string joint_name;
-    std::string base_link, tip_link;
-   
-    if(!getPlanningGroupBaseTipName(planningGroupName,  base_link, tip_link))
-        return false;
 
     urdf::Joint planning_group_joint;    
        
+    if(!kdl_tree_.getChain(base_frame_, tip_frame_ , kdl_chain_))
+        return false;
 
     for(std::size_t i=0;i<kdl_chain_.segments.size();i++ )
     {
@@ -621,11 +651,10 @@ bool RobotModel::getPlanningGroupJointinformation(const std::string planningGrou
 void RobotModel::getPlanningGroupJointsName(const std::string planningGroupName,
                                             std::vector< std::string> &planning_group_joints_name)
 {
-    //    planning_groups_joints are in  order from base to tip! very important
-    std::string base_link, tip_link;
+
     std::vector< std::pair<std::string,urdf::Joint> > planning_group_joints;
 
-    getPlanningGroupJointinformation(planningGroupName, planning_group_joints, base_link, tip_link);
+    getPlanningGroupJointInformation(planningGroupName, planning_group_joints);
 
     planning_group_joints_name.clear();
 
@@ -1090,7 +1119,7 @@ bool RobotModel::isStateValid(int self_collision_num_max_contacts, int external_
     kdl_frame_f_a_c.M.GetQuaternion(F_A_C.orientation.x(),F_A_C.orientation.y(),F_A_C.orientation.z(),F_A_C.orientation.w());
 }*/
 
-void RobotModel::ConvertPoseBetweenFrames( const std::string B_Frame_Name, const KDL::Frame &F_B_C , const std::string &A_Frame_Name ,KDL::Frame &F_A_C )
+void RobotModel::convertPoseBetweenFrames( const std::string B_Frame_Name, const KDL::Frame &F_B_C , const std::string &A_Frame_Name ,KDL::Frame &F_A_C )
 {
 
 /*
@@ -1240,8 +1269,7 @@ void RobotModel::generateRandomJointValue(const std::string  &planningGroupName,
 {
     std::vector< std::pair<std::string,urdf::Joint >  >   planning_groups_joints;
 
-    std::string base_link, tip_link;
-    this->getPlanningGroupJointinformation(planningGroupName , planning_groups_joints, base_link,  tip_link);
+    getPlanningGroupJointInformation(planningGroupName , planning_groups_joints);
     for(std::vector< std::pair<std::string,urdf::Joint >  >::iterator it=planning_groups_joints.begin();it!=planning_groups_joints.end();it++ )
     {
         double random_joint_value= randomFloat(it->second.limits->lower,it->second.limits->upper);
@@ -1257,8 +1285,6 @@ float RobotModel::randomFloat(const float& min,const  float &max)
     return min + r * (max - min);
 }
 
-
-
 void RobotModel::printWorldCollisionObject()
 {
      world_collision_detector_->printCollisionObject();
@@ -1269,7 +1295,7 @@ bool RobotModel::getChainJointState(std::string base_link, std::string tip_link,
 {
     //    planning_groups_joints are in  order from base to tip! very important
     if(!kdl_tree_.getChain(base_link, tip_link , kdl_chain_))
-    return false;
+        return false;
     for(std::size_t i=0;i<kdl_chain_.segments.size();i++ )
     {
         //KDL JointType: RotAxis,RotX,RotY,RotZ,TransAxis,TransX,TransY,TransZ,None;
