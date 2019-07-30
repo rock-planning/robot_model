@@ -7,6 +7,7 @@
     <logo>http://</logo>
     <author>Sankaranarayanan Natarajan/sankar.natarajan@dfki.de</author>
     <depend package="base/cmake" />
+    <depend package="base/types" />
     <depend package="planning/kinematics_library" />
     <depend package="planning/collision_detection" />
     <depend package="slam/octomap" />
