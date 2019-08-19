@@ -42,6 +42,16 @@
 
 namespace robot_model
 {
+    
+template<typename to, typename from>
+to lexical_cast(from const &x)
+{
+    std::stringstream os;
+    to ret;
+    os << x;
+    os >> ret;
+    return ret;
+}
 
 class RobotState
 {
@@ -53,7 +63,6 @@ class RobotState
 
 class RobotModel
 {
-
     public:
         RobotModel(RobotModelConfig robot_model_config, double link_padding = 1.00);
 
@@ -61,9 +70,7 @@ class RobotModel
 
         bool getPlanningGroupJointInformation(  const std::string  planningGroupName, std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints,
                                                 std::vector< std::string> &planning_group_joints_name);
-        
-// //         bool getPlanningGroupJointInformation(const std::string planningGroupName, std::vector< std::pair<std::string,urdf::Joint> >&planning_group_joints,
-//                                               std::vector< std::string> &planning_group_joints_name);
+
         bool getPlanningGroupJointInformation(const std::string planningGroupName, std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints);
 
         bool getPlanningGroupJointInformation(const std::string planningGroupName,  base::samples::Joints &planning_groups_joints);
@@ -215,9 +222,9 @@ class RobotModel
         
         bool getPlanningGroupBaseTipName(const std::string &planning_group_name,  std::string &base_link, std::string &tip_link);
 
-
-
 };
+
+using RobotModelPtr = std::shared_ptr<robot_model::RobotModel>;
 
 }// end namespace motion_planners
 #endif // ROBOTMODEL_HPP

@@ -229,7 +229,7 @@ void RobotModel::dfsTraversing(std::string start_link_name, std::vector<std::str
             if(joint_type != urdf::Joint::FIXED)
             {
                 kdl_chain_joint_array.data[0]=robot_state_.robot_joints_[joint_name].getJointValue();
-                 LOG_DEBUG( "[RobotModel] DFSTraversing : The joint between %s and %s is of type %f and is of value %d", 
+                 LOG_DEBUG( "[RobotModel] DFSTraversing : The joint between %s and %s is of type %d and is of value %f", 
                              start_link_name.c_str(), cl->name.c_str(), joint_type, kdl_chain_joint_array.data[0] ); 
           }
 

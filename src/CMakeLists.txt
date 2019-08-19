@@ -13,6 +13,9 @@ pkg_check_modules(OCTOMAP REQUIRED octomap)
 pkg_check_modules(KINEMATICS REQUIRED kinematics_library)
 pkg_check_modules(COLLISION_DETECTION REQUIRED collision_detection)
 
+set (EXTERNAL_LIB ${kdl_parser_LIBRARIES} ${SRDF_LIBRARIES} ${orocos_kdl_LIBRARIES} 
+                   octomap abstract_collision_detection ${COLLISION_DETECTION_LIBRARIES} ${KINEMATICS_LIBRARIES})
+
 
 include_directories(${CMAKE_SOURCE_DIR}/include ${EIGEN3_INCLUDE_DIR} ${kdl_parser_INCLUDE_DIRS} ${SRDF_INCLUDE_DIRS} 
 		    ${OCTOMAP_INCLUDE_DIRS} ${COLLISION_DETECTION_INCLUDE_DIRS} ${KINEMATICS_INCLUDE_DIRS} )
@@ -24,10 +27,10 @@ add_library(robot_model SHARED
             ${CMAKE_CURRENT_LIST_DIR}/HelperFunctions.cpp
 )
 
-target_link_libraries(robot_model  ${kdl_parser_LIBRARIES} ${SRDF_LIBRARIES} ${orocos_kdl_LIBRARIES} 
-				    octomap abstract_collision_detection ${COLLISION_DETECTION_LIBRARIES} ${KINEMATICS_LIBRARIES})
+target_link_libraries(robot_model ${EXTERNAL_LIB})
 
 set(PKGCONFIG_CFLAGS "${PKFCONFIG_CFLAGS} -I${COLLISION_DETECTION_INCLUDE_DIRS};${KINEMATICS_INCLUDE_DIRS}")
+#set(PKGCONFIG_REQUIRES "${PKGCONFIG_REQUIRES} ${EXTERNAL_LIB}")
 CONFIGURE_FILE("${PROJECT_NAME}.pc.in" "${PROJECT_NAME}.pc" @ONLY)
 
 install(DIRECTORY ../include/ DESTINATION include/)

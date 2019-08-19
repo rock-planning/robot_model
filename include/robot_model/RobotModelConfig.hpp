@@ -8,15 +8,6 @@
 namespace robot_model
 {
 
-template<typename to, typename from>
-to lexical_cast(from const &x)
-{
-    std::stringstream os;
-    to ret;
-    os << x;
-    os >> ret;
-    return ret;
-}
 
 enum USESELFCOLLISION
 {
