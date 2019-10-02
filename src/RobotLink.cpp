@@ -95,7 +95,6 @@ void RobotLink::getLinkVisuals(std::vector<urdf::VisualSharedPtr > &link_visuals
     {
         link_visuals.push_back( urdf::VisualSharedPtr(new urdf::Visual(link_visuals_.at(i))) );
     }
-
 }
 
 std::vector<urdf::CollisionSharedPtr > RobotLink::getLinkCollisions()

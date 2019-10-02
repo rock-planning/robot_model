@@ -566,7 +566,7 @@ bool RobotModel::getPlanningGroupBaseTipName(const std::string &planning_group_n
     return true;
 }
 
-bool RobotModel::getPlanningGroupJointInformation(const std::string planningGroupName,
+bool RobotModel::getPlanningGroupJointInformation(const std::string planning_group_name,
                                                   std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints,
                                                   std::vector< std::string> &planning_group_joints_name)
 {
@@ -594,7 +594,7 @@ bool RobotModel::getPlanningGroupJointInformation(const std::string planningGrou
     return true;
 }
 
-bool RobotModel::getPlanningGroupJointInformation(const std::string planningGroupName,
+bool RobotModel::getPlanningGroupJointInformation(const std::string planning_group_name,
                                                   std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints)
 {
     std::string joint_name;    
@@ -620,7 +620,7 @@ bool RobotModel::getPlanningGroupJointInformation(const std::string planningGrou
 
 
 
-bool RobotModel::getPlanningGroupJointInformation(const std::string planningGroupName,  base::samples::Joints &planning_groups_joints)
+bool RobotModel::getPlanningGroupJointInformation(const std::string planning_group_name,  base::samples::Joints &planning_groups_joints)
 {
     std::string joint_name;
 
@@ -648,13 +648,13 @@ bool RobotModel::getPlanningGroupJointInformation(const std::string planningGrou
     return true;
 }
 
-void RobotModel::getPlanningGroupJointsName(const std::string planningGroupName,
+void RobotModel::getPlanningGroupJointsName(const std::string planning_group_name,
                                             std::vector< std::string> &planning_group_joints_name)
 {
 
     std::vector< std::pair<std::string,urdf::Joint> > planning_group_joints;
 
-    getPlanningGroupJointInformation(planningGroupName, planning_group_joints);
+    getPlanningGroupJointInformation(planning_group_name, planning_group_joints);
 
     planning_group_joints_name.clear();
 
@@ -1009,14 +1009,16 @@ void RobotModel::updateJointGroup(const std::vector<std::string> &joint_names, c
     assert(joint_names.size() == joint_values.size());	    
     //auto start_time = std::chrono::high_resolution_clock::now(); 
 
-    //for(std::size_t i=0;i<joint_names.size();i++)
-    //    this->updateJoint(joint_names.at(i) ,joint_values(i) ) ;
-    
-    for(auto &jn: joint_names)
-    {
-        auto i = &jn - &joint_names[0];
-        this->updateJoint(joint_names.at(i) ,joint_values(i) ) ;
+    for(std::size_t i=0;i<joint_names.size();i++){
+       this->updateJoint(joint_names.at(i) ,joint_values(i) ) ;
+       //std::cout<<"[RobotModel]: Updating the joint "<<joint_names[i]<<"  with value: "<<joint_values[i]*57.2958<<std::endl;
     }
+    
+//     for(auto &jn: joint_names)
+//     {
+//         auto i = &jn - &joint_names[0];
+//         this->updateJoint(joint_names.at(i) ,joint_values(i) ) ;
+//     }
     
     //auto finish_time = std::chrono::high_resolution_clock::now();
    //std::chrono::duration<double> elapsed = finish_time - start_time;
@@ -1026,7 +1028,12 @@ void RobotModel::updateJointGroup(const std::vector<std::string> &joint_names, c
 void RobotModel::updateJointGroup(const base::samples::Joints &joint_values)
 {
     for(std::size_t i = 0; i < joint_values.size(); i++) 
+    {
+        LOG_DEBUG_S<<"[RobotModel]: Updating the joint "<<joint_values.names[i]<<"  with value: "<<joint_values.elements[i].position;
+//         std::cout<<"[RobotModel]: Updating the joint "<<joint_values.names[i]<<"  with value: "<<joint_values.elements[i].position*57.2958<<std::endl;
         updateJoint(joint_values.names[i], joint_values.elements[i].position) ;
+    }
+    //std::cout<<""<<std::endl;
 
 }
 
@@ -1265,11 +1272,11 @@ void RobotModel::addCollisionsToWorld(urdf::CollisionSharedPtr &robotCollision, 
     }
 }
 
-void RobotModel::generateRandomJointValue(const std::string  &planningGroupName,std::map<std::string, double  >   &planning_groups_joints_with_random_values)
+void RobotModel::generateRandomJointValue(const std::string  &planning_group_name,std::map<std::string, double  >   &planning_groups_joints_with_random_values)
 {
     std::vector< std::pair<std::string,urdf::Joint >  >   planning_groups_joints;
 
-    getPlanningGroupJointInformation(planningGroupName , planning_groups_joints);
+    getPlanningGroupJointInformation(planning_group_name , planning_groups_joints);
     for(std::vector< std::pair<std::string,urdf::Joint >  >::iterator it=planning_groups_joints.begin();it!=planning_groups_joints.end();it++ )
     {
         double random_joint_value= randomFloat(it->second.limits->lower,it->second.limits->upper);
@@ -1305,6 +1312,21 @@ bool RobotModel::getChainJointState(std::string base_link, std::string tip_link,
             double joint_state = getRobotState().robot_joints_[joint_name].getJointValue();
             planning_groups_joints[joint_name] = joint_state;
         }
+    }
+
+    return true;
+}
+
+bool RobotModel::getChainLinksName(std::string base_link, std::string tip_link, std::vector< std::string > &planning_group_link_name)
+{
+    planning_group_link_name.clear();
+    //    planning_groups_joints are in  order from base to tip! very important
+    if(!kdl_tree_.getChain(base_link, tip_link , kdl_chain_))
+        return false;
+    for(std::size_t i=0;i<kdl_chain_.segments.size();i++ )
+    {
+//         std::cout<<kdl_chain_.getSegment(i).getName()<<std::endl;
+        planning_group_link_name.push_back(kdl_chain_.getSegment(i).getName());
     }
 
     return true;

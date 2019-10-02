@@ -68,14 +68,14 @@ class RobotModel
 
         bool initialization();    
 
-        bool getPlanningGroupJointInformation(  const std::string  planningGroupName, std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints,
+        bool getPlanningGroupJointInformation(  const std::string  planning_group_name, std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints,
                                                 std::vector< std::string> &planning_group_joints_name);
 
-        bool getPlanningGroupJointInformation(const std::string planningGroupName, std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints);
+        bool getPlanningGroupJointInformation(const std::string planning_group_name, std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints);
 
-        bool getPlanningGroupJointInformation(const std::string planningGroupName,  base::samples::Joints &planning_groups_joints);
+        bool getPlanningGroupJointInformation(const std::string planning_group_name,  base::samples::Joints &planning_groups_joints);
 
-        void getPlanningGroupJointsName(const std::string planningGroupName, std::vector< std::string> &planning_group_joints_name);
+        void getPlanningGroupJointsName(const std::string planning_group_name, std::vector< std::string> &planning_group_joints_name);
 
         void setSRDF(boost::shared_ptr<srdf::Model> &srdf_model_);
 
@@ -108,7 +108,7 @@ class RobotModel
         bool isStateValid(int self_collision_num_max_contacts=1, int external_collision_manager_num_max_contacts=1);
 
         //void ConvertPoseBetweenFrames( const std::string B_Frame_Name, const base::samples::RigidBodyState &F_B_C , const std::string &A_Frame_Name ,
-        //				   base::samples::RigidBodyState &F_A_C );
+        //                 base::samples::RigidBodyState &F_A_C );
 
         void convertPoseBetweenFrames( const std::string B_Frame_Name, const KDL::Frame &F_B_C , const std::string &A_Frame_Name ,KDL::Frame &F_A_C );
 
@@ -120,13 +120,13 @@ class RobotModel
 
         //S void addCollisionsToWorld(boost::shared_ptr<fcl::CollisionObject> & collisionObject_ptr, std::string link_name);
 
-        void generateRandomJointValue(const std::string  &planningGroupName, std::map<std::string, double>   &planning_groups_joints_with_random_values);
+        void generateRandomJointValue(const std::string  &planning_group_name, std::map<std::string, double>   &planning_groups_joints_with_random_values);
 
         float randomFloat(const float& min,const  float &max);
 
         boost::filesystem::path resolve_path( const boost::filesystem::path& p, const boost::filesystem::path& base = boost::filesystem::current_path());
 
-        std::string getURDFFileAbsolutePath();	
+        std::string getURDFFileAbsolutePath();  
 
         inline void setRobotCollisionDetector(collision_detection::AbstractCollisionPtr collision_detector){robot_collision_detector_ = collision_detector;}
 
@@ -166,6 +166,7 @@ class RobotModel
         }
 
         void setDefaultJointWeight(const std::vector< std::string > &planning_joints_name);
+        
         int& robot_state();
 
         inline void setPlanningGroupName(std::string planning_group_name){planning_group_name_ = planning_group_name;}
@@ -177,6 +178,8 @@ class RobotModel
         bool getJointLimits(base::JointLimits &limits);
 
         kinematics_library::AbstractKinematicPtr robot_kinematics_;
+        
+        bool getChainLinksName(std::string base_link, std::string tip_link, std::vector< std::string> &planning_group_link_name);
 
         void getLinkTransformByName(const std::string link_name, Eigen::Vector3d &position, Eigen::Vector4d &orientation);
 
