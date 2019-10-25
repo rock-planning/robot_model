@@ -88,7 +88,7 @@ bool RobotModel::initialization()
 
     if(!res)
     {
-        LOG_FATAL("[RobotModel] Robot model initialisation failed");
+        LOG_ERROR("[RobotModel] Robot model initialisation failed");
         return false;
     }
 
