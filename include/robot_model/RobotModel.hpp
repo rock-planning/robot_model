@@ -89,8 +89,6 @@ class RobotModel
 
         inline void setRobotState(RobotState &robot_state ){robot_state_ = robot_state;}
 
-        void populate_disabled_collision_pairs();
-
         void updateJoint(std::string joint_name, double joint_value);
 
         void updateJointGroup(const std::vector<std::string> &joint_names, const Eigen::VectorXd &joint_values);
