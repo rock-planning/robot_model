@@ -103,7 +103,8 @@ class RobotModel
 
         void assignPlanningScene( const std::shared_ptr<octomap::OcTree> &octomap, const std::string &link_name, std::string collision_object_name);
 
-        bool isStateValid(int self_collision_num_max_contacts=1, int external_collision_manager_num_max_contacts=1);
+//         bool isStateValid(int self_collision_num_max_contacts=1, int external_collision_manager_num_max_contacts=1);
+        bool isStateValid(double &collision_cost);
 
         //void ConvertPoseBetweenFrames( const std::string B_Frame_Name, const base::samples::RigidBodyState &F_B_C , const std::string &A_Frame_Name ,
         //                 base::samples::RigidBodyState &F_A_C );
@@ -185,7 +186,12 @@ class RobotModel
 
         bool getRobotCollisionInfo(std::vector<collision_detection::DistanceInformation> &contact_info);
 
-        void getRobotDistanceToCollisionInfo(std::vector<collision_detection::DistanceInformation> &distance_info);
+//         void getRobotDistanceToCollisionInfo(std::vector<collision_detection::DistanceInformation> &distance_info);
+        
+        std::vector< collision_detection::DistanceInformation > getRobotCollisionDistanceInformation()
+        {
+            return robot_collision_detector_->getCollisionDistanceInformation();
+        }
         
         kinematics_library::AbstractKinematicPtr getKinematicsSolver(){return robot_kinematics_;}
         

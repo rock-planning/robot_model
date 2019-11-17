@@ -1072,36 +1072,19 @@ void RobotModel::assignPlanningScene(   const std::shared_ptr<octomap::OcTree> &
     world_collision_detector_->registerOctreeToCollisionManager(octomap, collision_object_pose, collision_object_name );    
 }
 
-bool RobotModel::isStateValid(int self_collision_num_max_contacts, int external_collision_manager_num_max_contacts)
+bool RobotModel::isStateValid(double &collision_cost)
 {
 //     auto start_time = std::chrono::high_resolution_clock::now();
-
-    if (robot_collision_detector_->checkSelfCollision(self_collision_num_max_contacts))
+    
+    if(robot_collision_detector_->isCollisionsOccured(collision_cost))
     {
-
-        LOG_DEBUG("[RobotModel]: There is no self collision, now checking for collision against environment");        
-
-        if(robot_collision_detector_->checkWorldCollision(external_collision_manager_num_max_contacts))
-        {
-            LOG_DEBUG("[RobotModel]: There is no collision against environment" );  
-//             auto finish_time = std::chrono::high_resolution_clock::now();
-//             std::chrono::duration<double> elapsed = finish_time - start_time;
-//             std::cout<<"Col Time = "<<elapsed.count()<<std::endl;
-            return true;
-        }
-        else
-        {
-            LOG_DEBUG("[RobotModel]: There is collision against environment" );
-//             auto finish_time = std::chrono::high_resolution_clock::now();
-//             std::chrono::duration<double> elapsed = finish_time - start_time;
-//             std::cout<<"Col Time = "<<elapsed.count()<<std::endl;
-            return false;
-        }
+        return false;
     }
+     
 //     auto finish_time = std::chrono::high_resolution_clock::now();
 //     std::chrono::duration<double> elapsed = finish_time - start_time;
 //     std::cout<<"Col Time = "<<elapsed.count()<<std::endl;
-    return false;
+    return true;
 }
 
 
@@ -1347,24 +1330,29 @@ void RobotModel::getLinkTransformByName(const std::string link_name, Eigen::Vect
 
 bool RobotModel::getRobotCollisionInfo(std::vector<collision_detection::DistanceInformation> &contact_info)
 {
-    bool no_collision = isStateValid();
+//     bool no_collision = isStateValid();
+//     if(!no_collision)
+//     {
+//         contact_info = robot_collision_detector_->getSelfContacts();
+//         contact_info.insert(contact_info.end(), robot_collision_detector_->getEnvironmentalContacts().begin(), robot_collision_detector_->getEnvironmentalContacts().end());
+//     }
+//     return no_collision;
+    double collision_cost = 0.0;
+    bool no_collision = isStateValid(collision_cost);
     if(!no_collision)
     {
-        contact_info = robot_collision_detector_->getSelfContacts();
-        contact_info.insert(contact_info.end(), robot_collision_detector_->getEnvironmentalContacts().begin(), robot_collision_detector_->getEnvironmentalContacts().end());
+        contact_info = robot_collision_detector_->getCollisionDistanceInformation();
     }
     return no_collision;
 }
 
-void RobotModel::getRobotDistanceToCollisionInfo(std::vector<collision_detection::DistanceInformation> &distance_info)
-{
-    robot_collision_detector_->computeSelfDistanceInfo();
-    distance_info = robot_collision_detector_->getSelfDistanceInfo();
-    robot_collision_detector_->computeClosestObstacleToRobotDistanceInfo();
-    distance_info.insert(distance_info.end(), robot_collision_detector_->getClosestObstacleToRobotDistanceInfo().begin(), robot_collision_detector_->getClosestObstacleToRobotDistanceInfo().end());
-
-
-}
+// void RobotModel::getRobotDistanceToCollisionInfo(std::vector<collision_detection::DistanceInformation> &distance_info)
+// {
+//     robot_collision_detector_->computeSelfDistanceInfo();
+//     distance_info = robot_collision_detector_->getSelfDistanceInfo();
+//     robot_collision_detector_->computeClosestObstacleToRobotDistanceInfo();
+//     distance_info.insert(distance_info.end(), robot_collision_detector_->getClosestObstacleToRobotDistanceInfo().begin(), robot_collision_detector_->getClosestObstacleToRobotDistanceInfo().end());
+// }
 
 }// end namespace 
 
