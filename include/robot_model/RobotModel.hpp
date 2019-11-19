@@ -159,9 +159,9 @@ class RobotModel
         
         void printWorldCollisionObject();
 
-        std::vector< std::pair<std::string, std::string> > getCollisionObjectNames()
+        std::vector< std::pair<std::string, std::string> > getCollidedObjectsNames()
         {
-        return robot_collision_detector_->getCollisionObjectNames();
+            return robot_collision_detector_->getCollidedObjectsNames();
         }
 
         void setDefaultJointWeight(const std::vector< std::string > &planning_joints_name);
