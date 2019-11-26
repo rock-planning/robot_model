@@ -76,6 +76,8 @@ class RobotModel
         bool getPlanningGroupJointInformation(const std::string planning_group_name,  base::samples::Joints &planning_groups_joints);
 
         void getPlanningGroupJointsName(const std::string planning_group_name, std::vector< std::string> &planning_group_joints_name);
+        
+        bool getPlanningGroupCollisionObjectsName(const std::string planning_group_name, std::vector< std::string> &planning_group_joints_name);
 
         void setSRDF(boost::shared_ptr<srdf::Model> &srdf_model_);
 
@@ -192,7 +194,7 @@ class RobotModel
         {
             return robot_collision_detector_->getCollisionDistanceInformation();
         }
-        
+
         kinematics_library::AbstractKinematicPtr getKinematicsSolver(){return robot_kinematics_;}
         
         std::string getWorldFrameName(){return world_frame_;}

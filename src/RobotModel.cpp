@@ -93,8 +93,6 @@ bool RobotModel::initialization()
     }
 
     // Initialise the robot joints
-
-
     for( std::map<std::string, urdf::JointSharedPtr >::iterator it = urdf_model_->joints_.begin(); it != urdf_model_->joints_.end(); it++)
     {
         LOG_DEBUG("[RobotModel] Visiting the joint:%s and it is of type %d", it->first.c_str(), it->second->type );
@@ -320,15 +318,17 @@ bool RobotModel::initializeLinksCollisions()
 
     for(std::map<std::string, RobotLink>::iterator it = robot_state_.robot_links_.begin(); it != robot_state_.robot_links_.end(); it++)
     {
-        link_name 	= it->first;
+        link_name = it->first;
         link_collisions = it->second.getLinkCollisions();
 
         LOG_DEBUG("For the link:%s there are %i collision objects in this link", link_name.c_str(), link_collisions.size());
         total_number_of_collision_should_be = total_number_of_collision_should_be + link_collisions.size();      
 
-        for(std::size_t i = 0; i < link_collisions.size(); i++ )        
+        for(std::size_t i = 0; i < link_collisions.size(); i++ )
         {
             collision_object_name = link_name+"_" +lexical_cast<std::string>(i);
+            // saving the collision object name as it registered to a collision detector.            
+            it->second.setLinkCollisionsName(collision_object_name);
 
             base::Pose collision_object_pose;
             collision_object_pose.position.x() = link_collisions.at(i)->origin.position.x;
@@ -660,6 +660,22 @@ void RobotModel::getPlanningGroupJointsName(const std::string planning_group_nam
 
     for(std::vector< std::pair<std::string, urdf::Joint> >::iterator it= planning_group_joints.begin(); it!=planning_group_joints.end();it++)    
         planning_group_joints_name.push_back(it->first);
+}
+
+void RobotModel::getPlanningGroupCollisionObjectsName(const std::string planning_group_name, std::vector< std::string> &planning_group_joints_name)
+{
+    std::vector< std::pair<std::string,urdf::Joint> > planning_group_joints;
+
+    getPlanningGroupJointInformation(planning_group_name, planning_group_joints);
+
+    planning_group_joints_name.clear();
+
+    for(std::vector< std::pair<std::string, urdf::Joint> >::iterator it= planning_group_joints.begin(); it!=planning_group_joints.end();it++)
+    {
+        // hmmm  to we need to use an iterator and check find == it.end()
+        std::vector< std::string> link_collision_names = robot_state_.robot_links_[it->second.child_link_name].getLinkCollisionsNames();
+        planning_group_joints_name.insert(planning_group_joints_name.end(), link_collision_names.begin(), link_collision_names.end());
+    }
 }
 
 void RobotModel::setSRDF(boost::shared_ptr<srdf::Model> &srdf_model_)

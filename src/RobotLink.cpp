@@ -144,6 +144,11 @@ void RobotLink::setLinkFrame(KDL::Frame &link_frame)
     link_frame_ = link_frame;
 }
 
+void RobotLink::setLinkCollisionsName( std::string collision_object_name)
+{
+    link_collisions_names_.push_back(collision_object_name);
+}
+        
 KDL::Frame RobotLink::getLinkFrame()
 {
     return link_frame_;
