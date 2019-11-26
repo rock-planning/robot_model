@@ -77,7 +77,7 @@ class RobotModel
 
         void getPlanningGroupJointsName(const std::string planning_group_name, std::vector< std::string> &planning_group_joints_name);
         
-        bool getPlanningGroupCollisionObjectsName(const std::string planning_group_name, std::vector< std::string> &planning_group_joints_name);
+        void getPlanningGroupCollisionObjectsName(const std::string planning_group_name, std::vector< std::string> &planning_group_joints_name);
 
         void setSRDF(boost::shared_ptr<srdf::Model> &srdf_model_);
 
