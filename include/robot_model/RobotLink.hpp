@@ -25,11 +25,12 @@ class RobotLink
         void setLinkVisuals( std::vector<urdf::VisualSharedPtr > &link_visuals);
         void setLinkCollisions( std::vector<urdf::CollisionSharedPtr > &link_collisions);
         // set the collision object name as registered to a collision library
-        void setLinkCollisionsName( std::string collision_object_name);
+        void setLinkCollisionsNameWithRadius( std::string collision_object_name, double radius);
         void setLinkCollision( const urdf::CollisionSharedPtr &link_collision);
         void getLinkVisuals(std::vector<urdf::VisualSharedPtr > &link_visuals );
         void getLinkCollisions(std::vector<urdf::CollisionSharedPtr > &link_collision);
         const std::vector<std::string>& getLinkCollisionsNames(){return link_collisions_names_;};
+        const std::vector<std::pair<std::string, double>>& getLinkCollisionsNamesWithRadius(){return link_collisions_names_with_radius_;};
         std::vector<urdf::CollisionSharedPtr >  getLinkCollisions();
         std::string &getLinkName();
         void setLinkDFSVisited(bool visited);
@@ -38,6 +39,7 @@ class RobotLink
         void setLinkFrame(KDL::Frame &link_frame);
         KDL::Frame getLinkFrame();
         void AddCollision(urdf::CollisionSharedPtr collision);
+        void clearLinkCollisionsNames(){link_collisions_names_.clear();}
 
 
     private:
@@ -49,6 +51,7 @@ class RobotLink
         std::vector<urdf::Collision> link_collisions_;        
         std::vector<urdf::Pose> link_visual_relative_pose_, link_collision_relative_pose_;
         std::vector<std::string> link_collisions_names_;
+        std::vector<std::pair<std::string, double>> link_collisions_names_with_radius_;
 
 };
 }// end namespace motion_planners

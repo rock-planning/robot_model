@@ -77,7 +77,9 @@ class RobotModel
 
         void getPlanningGroupJointsName(const std::string planning_group_name, std::vector< std::string> &planning_group_joints_name);
         
-        void getPlanningGroupCollisionObjectsName(const std::string planning_group_name, std::vector< std::string> &planning_group_joints_name);
+        // outputs actual collision object name with its radius. If no radius is available then it will output -1 as radius.
+        void getPlanningGroupCollisionObjectsNameWithRadius(const std::string planning_group_name, 
+                                                            std::vector< std::pair<std::string, double>> &planning_group_collision_link_names);
 
         void setSRDF(boost::shared_ptr<srdf::Model> &srdf_model_);
 
@@ -201,6 +203,8 @@ class RobotModel
         }
 
         kinematics_library::AbstractKinematicPtr getKinematicsSolver(){return robot_kinematics_;}
+        
+        const collision_detection::AbstractCollisionPtr& getRobotCollisionDetector(){return robot_collision_detector_;}
         
         std::string getWorldFrameName(){return world_frame_;}
         

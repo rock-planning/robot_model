@@ -315,11 +315,15 @@ bool RobotModel::initializeLinksCollisions()
     std::string link_name,  abs_path_to_mesh_file,  collision_object_name;    
     Eigen::Vector3d mesh_scale;
     std::vector<urdf::CollisionSharedPtr > link_collisions;
+    
+    
 
     for(std::map<std::string, RobotLink>::iterator it = robot_state_.robot_links_.begin(); it != robot_state_.robot_links_.end(); it++)
     {
         link_name = it->first;
         link_collisions = it->second.getLinkCollisions();
+        //clear the link collision names before populating it.
+        it->second.clearLinkCollisionsNames();
 
         LOG_DEBUG("For the link:%s there are %i collision objects in this link", link_name.c_str(), link_collisions.size());
         total_number_of_collision_should_be = total_number_of_collision_should_be + link_collisions.size();      
@@ -327,8 +331,7 @@ bool RobotModel::initializeLinksCollisions()
         for(std::size_t i = 0; i < link_collisions.size(); i++ )
         {
             collision_object_name = link_name+"_" +lexical_cast<std::string>(i);
-            // saving the collision object name as it registered to a collision detector.            
-            it->second.setLinkCollisionsName(collision_object_name);
+
 
             base::Pose collision_object_pose;
             collision_object_pose.position.x() = link_collisions.at(i)->origin.position.x;
@@ -343,6 +346,7 @@ bool RobotModel::initializeLinksCollisions()
             LOG_DEBUG(" The collision object name is %s with origin X=%f; Y=%f, Z=%f", collision_object_name.c_str(), 
                         link_collisions.at(i)->origin.position.x, link_collisions.at(i)->origin.position.y, link_collisions.at(i)->origin.position.z);
 
+            double collision_radius = -1.0;
 
             if(link_collisions.at(i)->geometry->type == urdf::Geometry::MESH)
             {
@@ -388,7 +392,12 @@ bool RobotModel::initializeLinksCollisions()
 
                 urdf::SphereSharedPtr urdf_sphere_ptr= urdf::static_pointer_cast <urdf::Sphere> (link_collisions.at(i)->geometry);                
                 robot_collision_detector_->registerSphereToCollisionManager(urdf_sphere_ptr->radius,collision_object_name, collision_object_pose, link_padding_);
+                collision_radius = urdf_sphere_ptr->radius;
+                
             }
+            
+            // saving the collision object name as it registered to a collision detector.
+            it->second.setLinkCollisionsNameWithRadius(collision_object_name, collision_radius);
         }
     }
     LOG_DEBUG_S<<"[initializeLinksCollisions]: Initialisation completed with "<<robot_collision_detector_->numberOfObjectsInCollisionManger()<< 
@@ -662,19 +671,19 @@ void RobotModel::getPlanningGroupJointsName(const std::string planning_group_nam
         planning_group_joints_name.push_back(it->first);
 }
 
-void RobotModel::getPlanningGroupCollisionObjectsName(const std::string planning_group_name, std::vector< std::string> &planning_group_joints_name)
+void RobotModel::getPlanningGroupCollisionObjectsNameWithRadius(const std::string planning_group_name, std::vector<std::pair<std::string, double>> &planning_group_collision_link_names)
 {
     std::vector< std::pair<std::string,urdf::Joint> > planning_group_joints;
 
     getPlanningGroupJointInformation(planning_group_name, planning_group_joints);
 
-    planning_group_joints_name.clear();
+    planning_group_collision_link_names.clear();
 
     for(std::vector< std::pair<std::string, urdf::Joint> >::iterator it= planning_group_joints.begin(); it!=planning_group_joints.end();it++)
     {
         // hmmm  to we need to use an iterator and check find == it.end()
-        std::vector< std::string> link_collision_names = robot_state_.robot_links_[it->second.child_link_name].getLinkCollisionsNames();
-        planning_group_joints_name.insert(planning_group_joints_name.end(), link_collision_names.begin(), link_collision_names.end());
+        std::vector<std::pair<std::string, double>> link_collision_names = robot_state_.robot_links_[it->second.child_link_name].getLinkCollisionsNamesWithRadius();
+        planning_group_collision_link_names.insert(planning_group_collision_link_names.end(), link_collision_names.begin(), link_collision_names.end());
     }
 }
 

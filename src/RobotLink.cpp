@@ -4,7 +4,10 @@
 using namespace robot_model;
 
 RobotLink::RobotLink()
-{}
+{
+    link_collisions_names_.clear();
+    link_collisions_names_with_radius_.clear();
+}
 
 std::vector<urdf::Pose> & RobotLink::getLinkCollisionRelativePose()
 {
@@ -144,9 +147,11 @@ void RobotLink::setLinkFrame(KDL::Frame &link_frame)
     link_frame_ = link_frame;
 }
 
-void RobotLink::setLinkCollisionsName( std::string collision_object_name)
+void RobotLink::setLinkCollisionsNameWithRadius( std::string collision_object_name, double radius)
 {
     link_collisions_names_.push_back(collision_object_name);
+    
+    link_collisions_names_with_radius_.push_back(std::make_pair(collision_object_name, radius));
 }
         
 KDL::Frame RobotLink::getLinkFrame()
