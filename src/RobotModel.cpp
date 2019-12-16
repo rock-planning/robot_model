@@ -1097,6 +1097,24 @@ void RobotModel::assignPlanningScene(   const std::shared_ptr<octomap::OcTree> &
     world_collision_detector_->registerOctreeToCollisionManager(octomap, collision_object_pose, collision_object_name );    
 }
 
+void RobotModel::updateOctomapAsBoxes(const std::shared_ptr<octomap::OcTree> &octomap, std::string collision_object_name)
+{
+    world_collision_detector_->updateOctomapBoxesEnvironment(octomap, collision_object_name);
+}
+
+void RobotModel::assignPlanningSceneAsBoxes(   const std::shared_ptr<octomap::OcTree> &octomap, const std::string &link_name, std::string collision_object_name)
+{
+
+    if(collision_object_name.empty())
+        collision_object_name = link_name+"_" +lexical_cast<std::string>(world_collision_detector_->numberOfObjectsInCollisionManger());
+
+    base::Pose collision_object_pose;
+    collision_object_pose.position.setZero();
+    collision_object_pose.orientation.setIdentity();
+
+    world_collision_detector_->registerOctreeAsBoxesToCollisionManager(octomap, collision_object_pose, collision_object_name );    
+}
+
 bool RobotModel::isStateValid(double &collision_cost)
 {
 //     auto start_time = std::chrono::high_resolution_clock::now();

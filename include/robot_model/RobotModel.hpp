@@ -106,6 +106,10 @@ class RobotModel
         void updateOctomap(const std::shared_ptr<octomap::OcTree> &octomap, std::string collision_object_name="");
 
         void assignPlanningScene( const std::shared_ptr<octomap::OcTree> &octomap, const std::string &link_name, std::string collision_object_name);
+        
+        void updateOctomapAsBoxes(const std::shared_ptr<octomap::OcTree> &octomap, std::string collision_object_name);
+        
+        void assignPlanningSceneAsBoxes(   const std::shared_ptr<octomap::OcTree> &octomap, const std::string &link_name, std::string collision_object_name);
 
 //         bool isStateValid(int self_collision_num_max_contacts=1, int external_collision_manager_num_max_contacts=1);
         bool isStateValid(double &collision_cost);
