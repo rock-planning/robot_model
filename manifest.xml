@@ -8,9 +8,15 @@
     <author>Sankaranarayanan Natarajan/sankar.natarajan@dfki.de</author>
     <depend package="base/cmake" />
     <depend package="base/types" />
+    <depend package="base/logging" />
+    <depend package="control/kdl_parser" />
+    <depend package="control/srdfdom" />
+    <depend package="control/urdfdom" />
+    <depend package="control/urdfdom_headers" />
     <depend package="planning/kinematics_library" />
     <depend package="planning/collision_detection" />
     <depend package="slam/octomap" />
+
     <name>robot_model</name>
     <maintainer>Sankar Natarajan/sankar.natarajan@dfki.de</maintainer>
     <stage>-1</stage>
