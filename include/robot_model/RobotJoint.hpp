@@ -23,12 +23,11 @@ struct MimicJoint
 
 
 class RobotJoint
-{
-    
+{    
     public:
         RobotJoint(){is_mimic_joint_ = false;};
 
-        inline double getJointValue() {return joint_value_;}
+        inline double getJointValue() const {return joint_value_;}
 
         inline void setJointValue( double joint_value) {joint_value_ = joint_value;}
 
@@ -43,17 +42,13 @@ class RobotJoint
         inline bool isMimicJoint( ) { return is_mimic_joint_; }
 
         MimicJoint mimic_joints_;
-	std::map< std::string, MimicJoint > mimic_joints_map_; // these joints are mimicking this joint.
-
-	bool is_mimic_joint_;
+        std::map< std::string, MimicJoint > mimic_joints_map_; // these joints are mimicking this joint.
+        bool is_mimic_joint_;
+        
     private:
         std::string joint_name_;
         double joint_value_;
-        urdf::Joint joint_info_;
-        
-
-        
-
+        urdf::Joint joint_info_;        
 };
 }// end namespace
 #endif // ROBOTJOINT_HPP

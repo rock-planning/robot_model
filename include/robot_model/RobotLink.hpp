@@ -41,9 +41,7 @@ class RobotLink
         void AddCollision(urdf::CollisionSharedPtr collision);
         void clearLinkCollisionsNames(){link_collisions_names_.clear();}
 
-
     private:
-
         bool dfs_visited_;
         std::string link_name_;
         KDL::Frame link_frame_;

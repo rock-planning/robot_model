@@ -72,8 +72,8 @@ class RobotModel
                                                 std::vector< std::string> &planning_group_joints_name);
 
         bool getPlanningGroupJointInformation(const std::string planning_group_name, std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints);
-
-        bool getPlanningGroupJointInformation(const std::string planning_group_name,  base::samples::Joints &planning_groups_joints);
+        
+        bool getPlanningGroupJointInformation(const std::string planning_group_name, base::samples::Joints &planning_groups_joints);
 
         void getPlanningGroupJointsName(const std::string planning_group_name, std::vector< std::string> &planning_group_joints_name);
         
@@ -111,11 +111,7 @@ class RobotModel
         
         void assignPlanningSceneAsBoxes(   const std::shared_ptr<octomap::OcTree> &octomap, const std::string &link_name, std::string collision_object_name);
 
-//         bool isStateValid(int self_collision_num_max_contacts=1, int external_collision_manager_num_max_contacts=1);
         bool isStateValid(double &collision_cost);
-
-        //void ConvertPoseBetweenFrames( const std::string B_Frame_Name, const base::samples::RigidBodyState &F_B_C , const std::string &A_Frame_Name ,
-        //                 base::samples::RigidBodyState &F_A_C );
 
         void convertPoseBetweenFrames( const std::string B_Frame_Name, const KDL::Frame &F_B_C , const std::string &A_Frame_Name ,KDL::Frame &F_A_C );
 
@@ -124,8 +120,6 @@ class RobotModel
         void getRobotVisuals(std::vector<urdf::VisualSharedPtr > &  robotVisuals);
 
         void addCollisionsToWorld(urdf::CollisionSharedPtr &  robotCollision, std::string link_name);
-
-        //S void addCollisionsToWorld(boost::shared_ptr<fcl::CollisionObject> & collisionObject_ptr, std::string link_name);
 
         void generateRandomJointValue(const std::string  &planning_group_name, std::map<std::string, double>   &planning_groups_joints_with_random_values);
 
@@ -141,7 +135,7 @@ class RobotModel
 
         void setDisabledEnvironmentCollision(std::vector <std::pair<std::string,std::string> > disabled_collision_pair);
 
-        inline void setKinematicsSolver(kinematics_library::AbstractKinematicPtr robot_kinematics){robot_kinematics_ = robot_kinematics;}
+        inline void setKinematicsSolver(std::string name, kinematics_library::AbstractKinematicPtr robot_kinematics){robot_kinematics_map_[name] = robot_kinematics;}
 
         std::vector< collision_detection::DistanceInformation>& getSelfDistanceInfo();
 
@@ -184,7 +178,7 @@ class RobotModel
 
         bool getJointLimits(base::JointLimits &limits);
 
-        kinematics_library::AbstractKinematicPtr robot_kinematics_;
+        std::map<std::string, kinematics_library::AbstractKinematicPtr> robot_kinematics_map_;
         
         bool getChainLinksName(std::string base_link, std::string tip_link, std::vector< std::string> &planning_group_link_name);
 
@@ -193,9 +187,7 @@ class RobotModel
         bool getChainJointState(std::string base_link, std::string tip_link, std::map<std::string, double> &planning_groups_joints);
 
         bool getRobotCollisionInfo(std::vector<collision_detection::DistanceInformation> &contact_info);
-
-//         void getRobotDistanceToCollisionInfo(std::vector<collision_detection::DistanceInformation> &distance_info);
-        
+       
         std::vector< collision_detection::DistanceInformation > getRobotCollisionDistanceInformation()
         {
             return robot_collision_detector_->getCollisionDistanceInformation();
@@ -206,7 +198,7 @@ class RobotModel
             return robot_collision_detector_->getCompleteDistanceInformation();
         }
 
-        kinematics_library::AbstractKinematicPtr getKinematicsSolver(){return robot_kinematics_;}
+        bool getKinematicsSolver(const std::string &name, kinematics_library::AbstractKinematicPtr &kinematic_solver);
         
         const collision_detection::AbstractCollisionPtr& getRobotCollisionDetector(){return robot_collision_detector_;}
         
@@ -242,7 +234,8 @@ class RobotModel
 
         void kdlFrameToEigenMatrix(KDL::Frame &frame,Eigen::Isometry3f &transform);
         
-        bool getPlanningGroupBaseTipName(const std::string &planning_group_name,  std::string &base_link, std::string &tip_link);
+        bool getPlanningGroup(const std::string &planning_group_name,  std::string &base_link, std::string &tip_link, 
+                              KDL::Chain &kdl_chain);
 
 };
 
