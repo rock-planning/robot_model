@@ -949,8 +949,9 @@ bool RobotModel::removeGraspObject(const std::string grasp_object_name)
     // remove the grasp link form collision pair    
     robot_collision_detector_->removeDisabledCollisionLink(grasp_object_name);
 
-     // remove the grasp link from collision data base
-    return robot_collision_detector_->removeSelfCollisionObject(grasp_object_name);
+    // remove the grasp link from collision data base
+    // "_0" is always added to the grasp object, due to the convention of naming while adding collision object to the collision library
+    return robot_collision_detector_->removeSelfCollisionObject(grasp_object_name+"_0");
 
 }
 
