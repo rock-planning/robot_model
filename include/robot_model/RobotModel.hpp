@@ -71,7 +71,7 @@ class RobotModel
         bool getPlanningGroupJointInformation(  const std::string  planning_group_name, std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints,
                                                 std::vector< std::string> &planning_group_joints_name);
 
-        bool getPlanningGroupJointInformation(const std::string planning_group_name, std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints);
+        bool getPlanningGroupJointInformation(const std::string planning_group_name, std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints) const;
         
         bool getPlanningGroupJointInformation(const std::string planning_group_name, base::samples::Joints &planning_groups_joints);
 
@@ -208,6 +208,8 @@ class RobotModel
         
         std::string getTipFrameName(){return tip_frame_;}
 
+        bool getBaseAndTipFramesNames(const std::string &planning_group_name, std::string &base_name, std::string &tip_name);
+
     private :
 
         RobotState  robot_state_;
@@ -235,7 +237,7 @@ class RobotModel
         void kdlFrameToEigenMatrix(KDL::Frame &frame,Eigen::Isometry3f &transform);
         
         bool getPlanningGroup(const std::string &planning_group_name,  std::string &base_link, std::string &tip_link, 
-                              KDL::Chain &kdl_chain);
+                              KDL::Chain &kdl_chain) const;
 
 };
 

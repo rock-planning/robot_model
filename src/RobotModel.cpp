@@ -439,6 +439,18 @@ boost::filesystem::path RobotModel::resolve_path( const boost::filesystem::path&
     return result;
 }
 
+
+bool RobotModel::getBaseAndTipFramesNames(const std::string &planning_group_name, std::string &base_name, std::string &tip_name)
+{
+    KDL::Chain kdl_chain;
+    // get base and tip frame
+    if(!getPlanningGroup(planning_group_name, base_name, tip_name, kdl_chain))
+        return false;
+    return true;
+}
+
+
+
 bool RobotModel::getJointLimits(std::vector< double > &lower_limits, std::vector< double > &upper_limits)
 {
     std::vector< std::pair<std::string, urdf::Joint> > planning_groups_joints;
@@ -549,7 +561,7 @@ void RobotModel::computeJacobain(const std::string &chain_root_link,const  std::
 }
 
 bool RobotModel::getPlanningGroup(const std::string &planning_group_name, std::string &base_link, std::string &tip_link,
-                                  KDL::Chain &kdl_chain)
+                                  KDL::Chain &kdl_chain) const
 {
     //    planning_groups_joints are in  order from base to tip! very important
 
@@ -608,7 +620,7 @@ bool RobotModel::getPlanningGroupJointInformation(const std::string planning_gro
 }
 
 bool RobotModel::getPlanningGroupJointInformation(const std::string planning_group_name,
-                                                  std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints)
+                                                  std::vector< std::pair<std::string,urdf::Joint> > &planning_groups_joints) const
 {
     std::string joint_name;    
     urdf::Joint planning_group_joint;
