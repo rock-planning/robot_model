@@ -77,6 +77,10 @@ class RobotModel
 
         void getPlanningGroupJointsName(const std::string planning_group_name, std::vector< std::string> &planning_group_joints_name);
         
+        bool getJointsInformation(const std::string &base_link, const std::string &tip_link, base::samples::Joints &joints) const;
+
+        base::samples::Joints getRobotJointsState();
+        
         // outputs actual collision object name with its radius. If no radius is available then it will output -1 as radius.
         void getPlanningGroupCollisionObjectsNameWithRadius(const std::string planning_group_name, 
                                                             std::vector< std::pair<std::string, double>> &planning_group_collision_link_names);

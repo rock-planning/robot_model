@@ -123,6 +123,7 @@ bool RobotModel::initialization()
             robot_state_.robot_joints_[joint_name] = robot_joint;
         }
     }
+    
 
     for (std::map<std::string, RobotJoint>::iterator it = robot_state_.robot_joints_.begin(); it!= robot_state_.robot_joints_.end(); ++it)
     {
@@ -473,7 +474,6 @@ bool RobotModel::getJointLimits(std::vector< double > &lower_limits, std::vector
     return true;
 }
 
-
 bool RobotModel::getJointLimits(base::JointLimits &limits)
 {
     std::vector< std::pair<std::string, urdf::Joint> > planning_groups_joints;
@@ -501,7 +501,19 @@ bool RobotModel::getJointLimits(base::JointLimits &limits)
     return true;
 }
 
-
+base::samples::Joints RobotModel::getRobotJointsState()
+{
+    base::samples::Joints joints;
+    std::string joint_name;
+    for (std::map<std::string, RobotJoint>::iterator it = robot_state_.robot_joints_.begin(); it!= robot_state_.robot_joints_.end(); ++it)
+    {
+        joints.names.push_back(it->first);
+        base::JointState joint_state;
+        joint_state.position = it->second.getJointValue();
+        joints.elements.push_back(joint_state);
+    }
+    return joints;
+}
 
 /*
 Manipulability Analysis
@@ -639,10 +651,35 @@ bool RobotModel::getPlanningGroupJointInformation(const std::string planning_gro
             joint_name=kdl_chain.getSegment(i).getJoint().getName();
             planning_group_joint=*(urdf_model_->getJoint(joint_name).get());
 
-            planning_groups_joints.push_back(std::make_pair(joint_name ,planning_group_joint )   );            
+            planning_groups_joints.push_back(std::make_pair(joint_name ,planning_group_joint )   );
         }
     }
     
+    return true;
+}
+
+bool RobotModel::getJointsInformation(const std::string &base_link, const std::string &tip_link, base::samples::Joints &joints) const
+{
+    std::string joint_name;
+    joints.clear();
+
+    // get kdl_chain, base and tip frame
+    KDL::Chain kdl_chain;
+    
+    if(!kdl_tree_.getChain(base_link, tip_link , kdl_chain))
+        return false;
+        
+    for(std::size_t i=0;i<kdl_chain.segments.size();i++ )
+    {    
+        if(! (kdl_chain.getSegment(i).getJoint().getType()==KDL::Joint::None) )
+        {
+            joint_name = kdl_chain.getSegment(i).getJoint().getName();
+            joints.names.push_back(joint_name);
+            base::JointState joint_state;
+            joint_state.position = getRobotState().robot_joints_[joint_name].getJointValue();
+            joints.elements.push_back(joint_state);
+        }
+    }
     return true;
 }
 
@@ -664,13 +701,13 @@ bool RobotModel::getPlanningGroupJointInformation(const std::string planning_gro
         if(! (kdl_chain.getSegment(i).getJoint().getType()==KDL::Joint::None) )
         {
             joint_name=kdl_chain.getSegment(i).getJoint().getName();
-            planning_group_joint=*(urdf_model_->getJoint(joint_name).get());
+            planning_group_joint=*(urdf_model_->getJoint(joint_name).get());  //????
 
             planning_groups_joints.names.push_back(joint_name);
             base::JointState joint_state;
             joint_state.position = getRobotState().robot_joints_[joint_name].getJointValue();
             
-            planning_groups_joints.elements.push_back(joint_state);            
+            planning_groups_joints.elements.push_back(joint_state);
         }
     }
     
@@ -973,7 +1010,7 @@ bool RobotModel::removeWorldObject(const std::string world_object_name)
 }
 
 void RobotModel::updateJoint(std::string joint_name, double joint_value)
-{ 
+{
     if(this->urdf_model_->getJoint(joint_name) )
     {
         if(! robot_state_.robot_joints_[joint_name].isMimicJoint() )
