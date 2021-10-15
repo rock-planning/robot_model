@@ -95,7 +95,7 @@ class RobotModel
 
         inline RobotState getRobotState () const { return robot_state_;}
 
-        inline void setRobotState(RobotState &robot_state ){robot_state_ = robot_state;}
+        inline void setRobotState(const RobotState &robot_state ){robot_state_ = robot_state;}
 
         void updateJoint(std::string joint_name, double joint_value);
 
