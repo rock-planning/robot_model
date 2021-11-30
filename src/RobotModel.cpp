@@ -714,17 +714,87 @@ bool RobotModel::getPlanningGroupJointInformation(const std::string planning_gro
     return true;
 }
 
-void RobotModel::getPlanningGroupJointsName(const std::string planning_group_name,
+bool RobotModel::getPlanningGroupJointInformation(const std::vector<std::string> &planning_groups_name, base::samples::Joints &planning_groups_joints)
+{
+    std::string joint_name;
+    urdf::Joint planning_group_joint;
+    bool read_this_jt = false;
+
+    for(std::size_t jj = 0; jj < planning_groups_name.size(); jj++ )
+    {
+        // get kdl_chain, base and tip frame
+        KDL::Chain kdl_chain;
+        std::string base_frame, tip_frame ;
+        if(!getPlanningGroup(planning_groups_name.at(jj), base_frame, tip_frame, kdl_chain))
+            return false;
+
+        for(std::size_t i=0;i<kdl_chain.segments.size();i++ )
+        {
+            //KDL JointType: RotAxis,RotX,RotY,RotZ,TransAxis,TransX,TransY,TransZ,None;
+            if(! (kdl_chain.getSegment(i).getJoint().getType()==KDL::Joint::None) )
+            {
+                joint_name = kdl_chain.getSegment(i).getJoint().getName();
+
+                if(planning_groups_joints.names.size() > 0)
+                {
+                    for(size_t ii = 0; ii < planning_groups_joints.names.size(); ii++)
+                    {
+                        if(planning_groups_joints.names.at(ii) == joint_name)
+                        {
+                            //std::cout<<"giotit = "<<it->first.c_str()<<" "<<real_vplanning_groups_joints.namesector_names.at(ii).c_str()<<std::endl;
+                            read_this_jt = true;
+                            break;
+                        }
+                    }
+                    if(read_this_jt)
+                    {
+                        read_this_jt = false;
+                        continue;
+                    }
+                }
+                
+                planning_group_joint=*(urdf_model_->getJoint(joint_name).get());  //????
+
+                planning_groups_joints.names.push_back(joint_name);
+                base::JointState joint_state;
+                joint_state.position = getRobotState().robot_joints_[joint_name].getJointValue();
+                
+                planning_groups_joints.elements.push_back(joint_state);
+            }
+        }
+    }
+    
+    return true;
+}
+
+bool RobotModel::getPlanningGroupJointsName(const std::string planning_group_name,
                                             std::vector< std::string> &planning_group_joints_name)
 {
     std::vector< std::pair<std::string,urdf::Joint> > planning_group_joints;
 
-    getPlanningGroupJointInformation(planning_group_name, planning_group_joints);
+    if(!getPlanningGroupJointInformation(planning_group_name, planning_group_joints))
+        return false;
 
     planning_group_joints_name.clear();
 
     for(std::vector< std::pair<std::string, urdf::Joint> >::iterator it= planning_group_joints.begin(); it!=planning_group_joints.end();it++)    
         planning_group_joints_name.push_back(it->first);
+
+    return true;
+}
+
+bool RobotModel::getPlanningGroupJointsName(const std::vector<std::string> &planning_groups_name,
+                                            std::vector< std::string> &planning_group_joints_name)
+{
+
+    base::samples::Joints planning_groups_joints;
+    if (!getPlanningGroupJointInformation(planning_groups_name, planning_groups_joints))
+        return false;
+
+    planning_group_joints_name.clear();
+    planning_group_joints_name = planning_groups_joints.names;
+
+    return true;
 }
 
 void RobotModel::getPlanningGroupCollisionObjectsNameWithRadius(const std::string planning_group_name, 

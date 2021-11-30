@@ -75,7 +75,11 @@ class RobotModel
         
         bool getPlanningGroupJointInformation(const std::string planning_group_name, base::samples::Joints &planning_groups_joints);
 
-        void getPlanningGroupJointsName(const std::string planning_group_name, std::vector< std::string> &planning_group_joints_name);
+        bool getPlanningGroupJointInformation(const std::vector<std::string> &planning_groups_name, base::samples::Joints &planning_groups_joints);
+
+        bool getPlanningGroupJointsName(const std::string planning_group_name, std::vector< std::string> &planning_group_joints_name);
+
+        bool getPlanningGroupJointsName(const std::vector<std::string> &planning_groups_name, std::vector< std::string> &planning_group_joints_name);
         
         bool getJointsInformation(const std::string &base_link, const std::string &tip_link, base::samples::Joints &joints) const;
 
