@@ -216,6 +216,8 @@ class RobotModel
         
         std::string getTipFrameName(){return tip_frame_;}
 
+        std::string getRobotName(){return srdf_model_->getName();}
+
         bool getBaseAndTipFramesNames(const std::string &planning_group_name, std::string &base_name, std::string &tip_name);
 
     private :
