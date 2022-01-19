@@ -135,7 +135,9 @@ class RobotModel
 
         boost::filesystem::path resolve_path( const boost::filesystem::path& p, const boost::filesystem::path& base = boost::filesystem::current_path());
 
-        std::string getURDFFileAbsolutePath();  
+        std::string getURDFfileAbsolutePath(){return urdf_file_abs_path_;};
+
+        std::string getSRDFfileAbsolutePath(){return srdf_file_abs_path_;}
 
         inline void setRobotCollisionDetector(collision_detection::AbstractCollisionPtr collision_detector){robot_collision_detector_ = collision_detector;}
 
