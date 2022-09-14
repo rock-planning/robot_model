@@ -797,12 +797,14 @@ bool RobotModel::getPlanningGroupJointsName(const std::vector<std::string> &plan
     return true;
 }
 
-void RobotModel::getPlanningGroupCollisionObjectsNameWithRadius(const std::string planning_group_name, 
+bool RobotModel::getPlanningGroupCollisionObjectsNameWithRadius(const std::string planning_group_name, 
                                                                 std::vector<std::pair<std::string, double>> &planning_group_collision_link_names)
 {
     std::vector< std::pair<std::string,urdf::Joint> > planning_group_joints;
 
-    getPlanningGroupJointInformation(planning_group_name, planning_group_joints);
+     
+    if (!getPlanningGroupJointInformation(planning_group_name, planning_group_joints))
+        return false;
 
     planning_group_collision_link_names.clear();
 
@@ -812,6 +814,8 @@ void RobotModel::getPlanningGroupCollisionObjectsNameWithRadius(const std::strin
         std::vector<std::pair<std::string, double>> link_collision_names = robot_state_.robot_links_[it->second.child_link_name].getLinkCollisionsNamesWithRadius();
         planning_group_collision_link_names.insert(planning_group_collision_link_names.end(), link_collision_names.begin(), link_collision_names.end());
     }
+
+    return true;
 }
 
 void RobotModel::setSRDF(boost::shared_ptr<srdf::Model> &srdf_model_)

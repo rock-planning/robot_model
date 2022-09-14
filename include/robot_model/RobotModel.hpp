@@ -86,7 +86,7 @@ class RobotModel
         base::samples::Joints getRobotJointsState();
         
         // outputs actual collision object name with its radius. If no radius is available then it will output -1 as radius.
-        void getPlanningGroupCollisionObjectsNameWithRadius(const std::string planning_group_name, 
+        bool getPlanningGroupCollisionObjectsNameWithRadius(const std::string planning_group_name, 
                                                             std::vector< std::pair<std::string, double>> &planning_group_collision_link_names);
 
         void setSRDF(boost::shared_ptr<srdf::Model> &srdf_model_);
