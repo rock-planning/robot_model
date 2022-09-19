@@ -208,6 +208,12 @@ class RobotModel
             return robot_collision_detector_->getCompleteDistanceInformation();
         }
 
+        std::vector< collision_detection::DistanceInformation > getOnlyRobotAndEnvironmentDistanceInformation()
+        {
+            return robot_collision_detector_->getOnlyEnvironmentDistanceInformation();
+        }
+        
+
         bool getKinematicsSolver(const std::string &name, kinematics_library::AbstractKinematicPtr &kinematic_solver);
         
         const collision_detection::AbstractCollisionPtr& getRobotCollisionDetector(){return robot_collision_detector_;}
