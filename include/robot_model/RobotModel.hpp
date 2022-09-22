@@ -89,6 +89,10 @@ class RobotModel
         bool getPlanningGroupCollisionObjectsNameWithRadius(const std::string planning_group_name, 
                                                             std::vector< std::pair<std::string, double>> &planning_group_collision_link_names);
 
+        bool getPlanningGroupCollisionObjectsNameWithRadius(const std::string planning_group_name, 
+                                                            std::map<std::string, std::vector< std::pair<std::string, double>>> &planning_group_collision_link_names);
+
+
         void setSRDF(boost::shared_ptr<srdf::Model> &srdf_model_);
 
         void setURDF(urdf::ModelInterfaceSharedPtr &urdf_model_);

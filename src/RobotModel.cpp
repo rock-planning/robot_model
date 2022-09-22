@@ -818,6 +818,27 @@ bool RobotModel::getPlanningGroupCollisionObjectsNameWithRadius(const std::strin
     return true;
 }
 
+bool RobotModel::getPlanningGroupCollisionObjectsNameWithRadius(const std::string planning_group_name, 
+                                                                std::map<std::string, std::vector< std::pair<std::string, double>>> &planning_group_collision_link_names)
+{
+    std::vector< std::pair<std::string,urdf::Joint> > planning_group_joints;
+
+     
+    if (!getPlanningGroupJointInformation(planning_group_name, planning_group_joints))
+        return false;
+
+    planning_group_collision_link_names.clear();
+
+    for(std::vector< std::pair<std::string, urdf::Joint> >::iterator it= planning_group_joints.begin(); it!=planning_group_joints.end();it++)
+    {
+        // hmmm  to we need to use an iterator and check find == it.end()
+        std::vector<std::pair<std::string, double>> link_collision_names = robot_state_.robot_links_[it->second.child_link_name].getLinkCollisionsNamesWithRadius();
+        planning_group_collision_link_names.insert(std::make_pair( it->second.name, link_collision_names));
+    }
+
+    return true;
+}
+
 void RobotModel::setSRDF(boost::shared_ptr<srdf::Model> &srdf_model_)
 {
     this->srdf_model_=srdf_model_;
