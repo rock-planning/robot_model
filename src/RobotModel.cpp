@@ -798,7 +798,7 @@ bool RobotModel::getPlanningGroupJointsName(const std::vector<std::string> &plan
 }
 
 bool RobotModel::getPlanningGroupCollisionObjectsNameWithRadius(const std::string planning_group_name, 
-                                                                std::vector<std::pair<std::string, double>> &planning_group_collision_link_names)
+                                                                CollisionObjectsRadius &planning_group_collision_link_names)
 {
     std::vector< std::pair<std::string,urdf::Joint> > planning_group_joints;
 
@@ -819,7 +819,7 @@ bool RobotModel::getPlanningGroupCollisionObjectsNameWithRadius(const std::strin
 }
 
 bool RobotModel::getPlanningGroupCollisionObjectsNameWithRadius(const std::string planning_group_name, 
-                                                                std::map<std::string, std::vector< std::pair<std::string, double>>> &planning_group_collision_link_names)
+                                                                std::map<std::string, CollisionObjectsRadius> &planning_group_collision_link_names)
 {
     std::vector< std::pair<std::string,urdf::Joint> > planning_group_joints;
 
@@ -834,6 +834,27 @@ bool RobotModel::getPlanningGroupCollisionObjectsNameWithRadius(const std::strin
         // hmmm  to we need to use an iterator and check find == it.end()
         std::vector<std::pair<std::string, double>> link_collision_names = robot_state_.robot_links_[it->second.child_link_name].getLinkCollisionsNamesWithRadius();
         planning_group_collision_link_names.insert(std::make_pair( it->second.name, link_collision_names));
+    }
+
+    return true;
+}
+
+bool RobotModel::getPlanningGroupCollisionObjectsNameWithRadius(const std::string planning_group_name, 
+                                                                std::vector<std::pair<std::string, CollisionObjectsRadius>> &planning_group_collision_link_names)
+{
+    std::vector< std::pair<std::string,urdf::Joint> > planning_group_joints;
+
+     
+    if (!getPlanningGroupJointInformation(planning_group_name, planning_group_joints))
+        return false;
+
+    planning_group_collision_link_names.clear();
+
+    for(std::vector< std::pair<std::string, urdf::Joint> >::iterator it= planning_group_joints.begin(); it!=planning_group_joints.end();it++)
+    {
+        // hmmm  to we need to use an iterator and check find == it.end()
+        std::vector<std::pair<std::string, double>> link_collision_names = robot_state_.robot_links_[it->second.child_link_name].getLinkCollisionsNamesWithRadius();
+        planning_group_collision_link_names.push_back(std::make_pair( it->second.name, link_collision_names));
     }
 
     return true;
