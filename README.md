@@ -1,11 +1,16 @@
 robot_model
 =============
+
+Robot Model was initiated and is currently developed at the
+[Robotics Innovation Center](http://robotik.dfki-bremen.de/en/startpage.html) of the
+[German Research Center for Artificial Intelligence (DFKI)](http://www.dfki.de) in Bremen.
+
 Robot Model is responsible for holding the information regarding the robot joints and links.
 The robot model could also be used for checking collision detection.
 
 # Requirements
 
-![robotmodel](/uploads/97ab9ad5b73813fcf8b4bd2f9ebc2c29/robotmodel.png)
+![robotmodel](/robot_model/images/robotmodel.png)
 
 As shown in the above figure this package depends on collision detection and kinematics
 libraries:
