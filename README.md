@@ -14,8 +14,8 @@ The robot model could also be used for checking collision detection.
 
 As shown in the above figure this package depends on collision detection and kinematics
 libraries:
-- [Kinematics Library](https://git.hb.dfki.de/dfki-planning/kinematics_library)
-- [Collision Detection Library](https://git.hb.dfki.de/dfki-planning/collision_detection)
+- [Kinematics Library](https://github.com/rock-planning/kinematics_library)
+- [Collision Detection Library](https://github.com/rock-planning/collision_detection)
 
 
 Installation
@@ -29,7 +29,7 @@ Rock CMake Macros
 -----------------
 
 This package uses a set of CMake helper shipped as the Rock CMake macros.
-Documentations is available on [this page](http://rock-robotics.org/stable/documentation/packages/cmake_macros.html).
+Documentations is available on [this page](https://www.rock-robotics.org/documentation/packages/cmake_macros.html).
 
 Rock Standard Layout
 --------------------
