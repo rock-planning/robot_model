@@ -10,7 +10,7 @@ The robot model could also be used for checking collision detection.
 
 # Requirements
 
-![robotmodel](/robot_model/images/robotmodel.png)
+![robotmodel](/images/robotmodel.png)
 
 As shown in the above figure this package depends on collision detection and kinematics
 libraries:
