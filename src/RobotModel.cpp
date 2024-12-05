@@ -294,7 +294,7 @@ void RobotModel::setDisabledEnvironmentCollision(std::vector <std::pair<std::str
 {
      for(std::size_t i = 0; i < disabled_collision_pair.size(); i++)
      {
-        srdf::Model::DisabledCollision disabled_pair;
+        srdf::Model::CollisionPair disabled_pair;
         disabled_pair.link1_ = disabled_collision_pair.at(i).first;
         disabled_pair.link2_ = disabled_collision_pair.at(i).second;
         // assign the disabled collision pairs to the collision library
@@ -308,7 +308,7 @@ bool RobotModel::initializeLinksCollisions()
     std::string urdf_directory_path;
 
     // get the disabled collision pairs from srdf
-    std::vector<srdf::Model::DisabledCollision> disabled_collision_pairs = srdf_model_->getDisabledCollisionPairs();
+    std::vector<srdf::Model::CollisionPair> disabled_collision_pairs = srdf_model_->getDisabledCollisionPairs();
     // assign the disabled collision pairs to the collision library
     robot_collision_detector_->AbstractCollisionDetection::setDisabledCollisionPairs( disabled_collision_pairs);
 
@@ -963,7 +963,7 @@ void RobotModel::addGraspObject(urdf::CollisionSharedPtr grasp_object, std::stri
     robot_state_.robot_links_[grasp_object->name].calculateLinkCollisionPoseinGlobalPose();
 
     // disable the collision between the grasp object and its parent link
-    srdf::Model::DisabledCollision disable_collision_grasp_object_w_parent_link;
+    srdf::Model::CollisionPair disable_collision_grasp_object_w_parent_link;
     disable_collision_grasp_object_w_parent_link.link1_ = grasp_object->name;
     disable_collision_grasp_object_w_parent_link.link2_ = parent_link_name;
     disable_collision_grasp_object_w_parent_link.reason_ = "Adjacent";

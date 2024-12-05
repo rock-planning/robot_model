@@ -29,10 +29,10 @@
 #include "robot_model/RobotLink.hpp"
 #include "robot_model/RobotJoint.hpp"
 
-#include <base-logging/Logging.hpp>
-#include <base/Pose.hpp>
-#include <base/samples/Joints.hpp>
-#include <base/JointLimits.hpp>
+#include <base-logging/logging/Logging.hpp>
+#include <base-types/Pose.hpp>
+#include <base-types/samples/Joints.hpp>
+#include <base-types/JointLimits.hpp>
 
 #include <collision_detection/abstract/AbstractCollisionDetection.hpp>
 #include <kinematics_library/KinematicsFactory.hpp>
