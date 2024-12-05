@@ -6,30 +6,11 @@ set(CMAKE_CXX_STANDARD 14)
 set(ROBOT_MODEL_VERSION 0.1)
 set(TARGET_NAME ${PROJECT_NAME})
 
-# Boost configuration
-set(BOOST_ROOT /home/rsc/rsc/projects/libraries/dfki/dependancies/boost_1_82_0)
-set(BOOST_LIBRARYDIR ${BOOST_ROOT}/stage/lib)
-set(BOOST_INCLUDEDIR ${BOOST_ROOT})
-
-# Explicitly specify library names
-set(Boost_SYSTEM_LIBRARY "${BOOST_LIBRARYDIR}/libboost_system.so.1.82.0")
-set(Boost_FILESYSTEM_LIBRARY "${BOOST_LIBRARYDIR}/libboost_filesystem.so.1.82.0")
-
-# Additional CMake variables to control Boost discovery
-set(Boost_NO_SYSTEM_PATHS OFF)
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-
 find_package(Eigen3 REQUIRED)
 find_package(Threads REQUIRED)
-# Find Boost package
 find_package(Boost COMPONENTS system filesystem REQUIRED)
 
-# Explicitly add library directories
-link_directories(${BOOST_LIBRARYDIR})
-
-INCLUDE(FindPkgConfig)
+include(FindPkgConfig)
 pkg_check_modules(OROCOS_KDL REQUIRED orocos_kdl)
 pkg_check_modules(KDL_PARSER REQUIRED kdl_parser)
 pkg_check_modules(URDF REQUIRED urdfdom)
@@ -38,8 +19,8 @@ pkg_check_modules(SRDF REQUIRED srdfdom)
 pkg_check_modules(OCTOMAP REQUIRED octomap)
 pkg_check_modules(KINEMATICS REQUIRED kinematics_library)
 pkg_check_modules(COLLISION_DETECTION REQUIRED collision_detection)
-pkg_check_modules(BASE_TYPES REQUIRED base-types)
-pkg_search_module(BASE_LOGGING REQUIRED base-logging)
+pkg_check_modules(BASE_TYPES REQUIRED base_types)
+pkg_search_module(BASE_LOGGING REQUIRED base_logging)
 
 set(ROBOTMODEL_LIB_INCLUDES 
     ${CMAKE_SOURCE_DIR}/include 
@@ -100,8 +81,6 @@ target_include_directories(robot_model PUBLIC
 
 target_link_libraries(robot_model PUBLIC 
     ${ROBOTMODEL_DEP_LIBS}
-    "${BOOST_LIBRARYDIR}/libboost_system.so.1.82.0"
-    "${BOOST_LIBRARYDIR}/libboost_filesystem.so.1.82.0"
 )
 
 # now we add all the required libraries in PKGCONFIG_REQUIRES macro
