@@ -7,6 +7,6 @@ Name: robot_model
 Description: @PROJECT_DESCRIPTION@
 Version: @PROJECT_VERSION@
 Requires: orocos_kdl kdl_parser urdfdom urdfdom_headers srdfdom octomap kinematics_library collision_detection
-Requires.private: eigen3 base-types base-logging
+Requires.private: eigen3 base_types base_logging
 Libs: -L${libdir} -l@TARGET_NAME@ -lboost_system -lboost_filesystem @PKGCONFIG_LIBS@
 Cflags: -I${includedir} @PKGCONFIG_CFLAGS@ -I@BOOST_INCLUDEDIR@ -I@EIGEN3_INCLUDE_DIR@
