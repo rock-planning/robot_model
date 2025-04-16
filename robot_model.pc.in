@@ -1,12 +1,13 @@
 prefix=@CMAKE_INSTALL_PREFIX@
-exec_prefix=@CMAKE_INSTALL_PREFIX@
-libdir=${prefix}/lib
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
 includedir=${prefix}/include/robot_model
 
-Name: robot_model
+Name: @PROJECT_NAME@
 Description: @PROJECT_DESCRIPTION@
-Version: @PROJECT_VERSION@
-Requires: orocos_kdl kdl_parser urdfdom urdfdom_headers srdfdom octomap kinematics_library collision_detection
-Requires.private: eigen3 base_types base_logging
-Libs: -L${libdir} -l@TARGET_NAME@ -lboost_system -lboost_filesystem @PKGCONFIG_LIBS@
+Version: @ROBOT_MODEL_VERSION@
+Requires: @PKGCONFIG_REQUIRES_STR@
+Requires.private: eigen3
+Libs: -L${libdir} -lrobot_model @PKGCONFIG_LIBS@
+Libs.private: @Boost_SYSTEM_LIBRARY@ @Boost_FILESYSTEM_LIBRARY@ -pthread
 Cflags: -I${includedir} @PKGCONFIG_CFLAGS@ -I@BOOST_INCLUDEDIR@ -I@EIGEN3_INCLUDE_DIR@
