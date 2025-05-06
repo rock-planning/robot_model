@@ -11,11 +11,11 @@
 namespace robot_model
 {
 
-    KDL::Vector toKdl(urdf::Vector3 v);
-    KDL::Rotation toKdl(urdf::Rotation r);
-    KDL::Frame toKdl(urdf::Pose p);
-    urdf::Pose toURDFPose(KDL::Frame frame);
-    void KDLFrameToEigenMatrix(KDL::Frame &frame, Eigen::Isometry3f &transform);
+    KDL::Vector toKdl(const urdf::Vector3 &v);
+    KDL::Rotation toKdl(const urdf::Rotation &r);
+    KDL::Frame toKdl(const urdf::Pose &p);
+    urdf::Pose toURDFPose(const KDL::Frame &frame);
+    void KDLFrameToEigenMatrix(const KDL::Frame &frame, Eigen::Isometry3f &transform);
 }
 
 #endif

@@ -37,7 +37,7 @@ namespace robot_model
         return urdf_pose;
     }
 
-    void KDLFrameToEigenMatrix(KDL::Frame &frame, Eigen::Isometry3f &transform)
+    void KDLFrameToEigenMatrix(const KDL::Frame &frame, Eigen::Isometry3f &transform)
     {
         transform.setIdentity(); // ensures last row is [0 0 0 1]
         transform.translation() << frame.p.x(), frame.p.y(), frame.p.z();
