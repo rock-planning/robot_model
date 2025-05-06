@@ -1,55 +1,52 @@
 #ifndef ROBOTJOINT_HPP
 #define ROBOTJOINT_HPP
 
-
 #include <vector>
 #include <string>
 #include <urdf_model/model.h>
 
 namespace robot_model
 {
-/**
- * Struct to hold mimic joint properties
- */
-struct MimicJoint
-{
-    MimicJoint( std::string joint_to_mimic = "", double multiplier = 1, double offset = 0 )
-                : joint_to_mimic( joint_to_mimic ), multiplier( multiplier ), offset( offset ) { }
+    /**
+     * Struct to hold mimic joint properties
+     */
+    struct MimicJoint
+    {
+        MimicJoint(std::string joint_to_mimic = "", double multiplier = 1, double offset = 0)
+            : joint_to_mimic(joint_to_mimic), multiplier(multiplier), offset(offset) {}
 
-    std::string joint_to_mimic;
-    double multiplier;
-    double offset;
-};
+        std::string joint_to_mimic;
+        double multiplier;
+        double offset;
+    };
 
-
-class RobotJoint
-{    
+    class RobotJoint
+    {
     public:
-        RobotJoint(){is_mimic_joint_ = false;};
+        RobotJoint() { is_mimic_joint_ = false; };
 
-        inline double getJointValue() const {return joint_value_;}
+        inline double getJointValue() const { return joint_value_; }
 
-        inline void setJointValue( double joint_value) {joint_value_ = joint_value;}
+        inline void setJointValue(double joint_value) { joint_value_ = joint_value; }
 
-        inline void setJointName(std::string joint_name) {joint_name_ = joint_name;}
+        inline void setJointName(std::string joint_name) { joint_name_ = joint_name; }
 
-        inline urdf::Joint getJointInfo() {return joint_info_;}
+        inline urdf::Joint getJointInfo() { return joint_info_; }
 
-        inline void setJointInfo(urdf::Joint joint_info ) {joint_info_ = joint_info;}
+        inline void setJointInfo(urdf::Joint joint_info) { joint_info_ = joint_info; }
 
-        inline void setJointAsMimic() {is_mimic_joint_ = true;}
+        inline void setJointAsMimic() { is_mimic_joint_ = true; }
 
-        inline bool isMimicJoint( ) { return is_mimic_joint_; }
+        inline bool isMimicJoint() { return is_mimic_joint_; }
 
         MimicJoint mimic_joints_;
-        std::map< std::string, MimicJoint > mimic_joints_map_; // these joints are mimicking this joint.
+        std::map<std::string, MimicJoint> mimic_joints_map_; // these joints are mimicking this joint.
         bool is_mimic_joint_;
-        
+
     private:
         std::string joint_name_;
         double joint_value_;
-        urdf::Joint joint_info_;        
-};
-}// end namespace
+        urdf::Joint joint_info_;
+    };
+} // end namespace
 #endif // ROBOTJOINT_HPP
-
