@@ -21,104 +21,97 @@ std::vector<urdf::Pose> &RobotLink::getLinkVisualRelativePose()
 
 void RobotLink::calculateLinkVisualsPoseInGlobalPose()
 {
-    KDL::Frame visual_global_pose;
-    double x, y, z, w;
-
-    for (std::size_t i = 0; i < link_visuals_.size(); i++)
+    for (std::size_t i = 0; i < link_visuals_.size(); ++i)
     {
-        visual_global_pose = getLinkFrame() * toKdl(link_visual_relative_pose_[i]);
-        visual_global_pose.M.GetQuaternion(x, y, z, w);
-
-        link_visuals_.at(i).origin.position.x = visual_global_pose.p.x();
-        link_visuals_.at(i).origin.position.y = visual_global_pose.p.y();
-        link_visuals_.at(i).origin.position.z = visual_global_pose.p.z();
-        link_visuals_.at(i).origin.rotation.w = w;
-        link_visuals_.at(i).origin.rotation.x = x;
-        link_visuals_.at(i).origin.rotation.y = y;
-        link_visuals_.at(i).origin.rotation.z = z;
+        const auto global_pose = getLinkFrame() * toKdl(link_visual_relative_pose_[i]);
+        global_pose.M.GetQuaternion(
+            link_visuals_[i].origin.rotation.x,
+            link_visuals_[i].origin.rotation.y,
+            link_visuals_[i].origin.rotation.z,
+            link_visuals_[i].origin.rotation.w);
+        link_visuals_[i].origin.position.x = global_pose.p.x();
+        link_visuals_[i].origin.position.y = global_pose.p.y();
+        link_visuals_[i].origin.position.z = global_pose.p.z();
     }
 }
 
 void RobotLink::calculateLinkCollisionPoseinGlobalPose()
 {
-    KDL::Frame collision_global_pose;
-    double x, y, z, w;
-    for (std::size_t i = 0; i < link_collisions_.size(); i++)
+    for (std::size_t i = 0; i < link_collisions_.size(); ++i)
     {
-        collision_global_pose = getLinkFrame() * toKdl(link_collision_relative_pose_[i]);
-        collision_global_pose.M.GetQuaternion(x, y, z, w);
-
-        link_collisions_.at(i).origin.position.x = collision_global_pose.p.x();
-        link_collisions_.at(i).origin.position.y = collision_global_pose.p.y();
-        link_collisions_.at(i).origin.position.z = collision_global_pose.p.z();
-        link_collisions_.at(i).origin.rotation.w = w;
-        link_collisions_.at(i).origin.rotation.x = x;
-        link_collisions_.at(i).origin.rotation.y = y;
-        link_collisions_.at(i).origin.rotation.z = z;
+        const auto global_pose = getLinkFrame() * toKdl(link_collision_relative_pose_[i]);
+        global_pose.M.GetQuaternion(
+            link_collisions_[i].origin.rotation.x,
+            link_collisions_[i].origin.rotation.y,
+            link_collisions_[i].origin.rotation.z,
+            link_collisions_[i].origin.rotation.w);
+        link_collisions_[i].origin.position.x = global_pose.p.x();
+        link_collisions_[i].origin.position.y = global_pose.p.y();
+        link_collisions_[i].origin.position.z = global_pose.p.z();
     }
 }
 
 std::vector<urdf::VisualSharedPtr> RobotLink::getLinkVisuals()
 {
-    std::vector<urdf::VisualSharedPtr> link_visuals_shared_ptr;
-    for (std::size_t i = 0; i < link_visuals_.size(); i++)
+    std::vector<urdf::VisualSharedPtr> result;
+    result.reserve(link_visuals_.size());
+    for (const auto &visual : link_visuals_)
     {
-        link_visuals_shared_ptr.push_back(urdf::VisualSharedPtr(new urdf::Visual(link_visuals_.at(i))));
+        result.emplace_back(boost::make_shared<urdf::Visual>(visual));
     }
-    return link_visuals_shared_ptr;
+    return result;
 }
 
 void RobotLink::setLinkVisuals(std::vector<urdf::VisualSharedPtr> &links)
 {
-    for (std::size_t i = 0; i < links.size(); i++)
+    for (const auto &link : links)
     {
-        link_visuals_.push_back(*(links.at(i).get()));
-        link_visual_relative_pose_.push_back(links.at(i)->origin);
+        link_visuals_.emplace_back(*link);
+        link_visual_relative_pose_.emplace_back(link->origin);
     }
 }
 
 void RobotLink::setLinkCollisions(std::vector<urdf::CollisionSharedPtr> &links)
 {
-    for (std::size_t i = 0; i < links.size(); i++)
+    for (const auto &link : links)
     {
-        link_collisions_.push_back(*(links.at(i).get()));
-        link_collision_relative_pose_.push_back(links.at(i)->origin);
+        link_collisions_.emplace_back(*link);
+        link_collision_relative_pose_.emplace_back(link->origin);
     }
 }
 
 void RobotLink::setLinkCollision(const urdf::CollisionSharedPtr &link_collision)
 {
-    link_collisions_.push_back(*(link_collision.get()));
-    link_collision_relative_pose_.push_back(link_collision->origin);
+    link_collisions_.emplace_back(*link_collision);
+    link_collision_relative_pose_.emplace_back(link_collision->origin);
 }
 
-void RobotLink::getLinkVisuals(std::vector<urdf::VisualSharedPtr> &link_visuals)
+void RobotLink::getLinkVisuals(std::vector<urdf::VisualSharedPtr> &link_visuals) // TODO
 {
-    for (std::size_t i = 0; i < link_visuals_.size(); i++)
+    for (const auto &i : link_visuals_)
     {
-        link_visuals.push_back(urdf::VisualSharedPtr(new urdf::Visual(link_visuals_.at(i))));
+        link_visuals.emplace_back(boost::make_shared<urdf::Collision>(i));
     }
 }
 
 std::vector<urdf::CollisionSharedPtr> RobotLink::getLinkCollisions()
 {
     // return this->link_collisions;
-    std::vector<urdf::CollisionSharedPtr> link_collisions_share_ptr;
-
-    for (std::size_t i = 0; i < link_collisions_.size(); i++)
+    std::vector<urdf::CollisionSharedPtr> result;
+    result.reserve(link_collisions_.size());
+    for (const auto &col : link_collisions_)
     {
-        link_collisions_share_ptr.push_back(urdf::CollisionSharedPtr(new urdf::Collision(link_collisions_.at(i))));
+        result.emplace_back(boost::make_shared<urdf::Collision>(col));
     }
-    return link_collisions_share_ptr;
+    return result;
 }
 
 void RobotLink::getLinkCollisions(std::vector<urdf::CollisionSharedPtr> &link_collision)
 {
-    // for(std::size_t i = 0; i < link_collisions_.size(); i++)
-    for (auto &lc : link_collisions_)
+    link_collision.reserve(link_collision.size() + link_collisions_.size());
+    for (const auto &col : link_collisions_)
     {
-        // link_collision.push_back( urdf::CollisionSharedPtr(new urdf::Collision(link_collisions_.at(i))) );
-        link_collision.push_back(urdf::CollisionSharedPtr(new urdf::Collision(lc)));
+        link_collision.emplace_back(boost::make_shared<urdf::Collision>(col));
     }
 }
 
@@ -137,21 +130,20 @@ bool RobotLink::getLinkDFSVisited()
     return dfs_visited_;
 }
 
-void RobotLink::setLinkName(std::string &link_name)
+void RobotLink::setLinkName(const std::string &link_name)
 {
     link_name_ = link_name;
 }
 
-void RobotLink::setLinkFrame(KDL::Frame &link_frame)
+void RobotLink::setLinkFrame(const KDL::Frame &link_frame)
 {
     link_frame_ = link_frame;
 }
 
-void RobotLink::setLinkCollisionsNameWithRadius(std::string collision_object_name, double radius)
+void RobotLink::setLinkCollisionsNameWithRadius(const std::string &collision_object_name, double radius)
 {
-    link_collisions_names_.push_back(collision_object_name);
-
-    link_collisions_names_with_radius_.push_back(std::make_pair(collision_object_name, radius));
+    link_collisions_names_.emplace_back(collision_object_name);
+    link_collisions_names_with_radius_.emplace_back(collision_object_name, radius);
 }
 
 KDL::Frame RobotLink::getLinkFrame()
@@ -161,24 +153,19 @@ KDL::Frame RobotLink::getLinkFrame()
 
 void RobotLink::AddCollision(urdf::CollisionSharedPtr collision)
 {
+    link_collision_relative_pose_.emplace_back(collision->origin);
 
-    link_collision_relative_pose_.push_back(collision->origin);
+    const auto global_pose = getLinkFrame() * toKdl(collision->origin);
+    global_pose.M.GetQuaternion(
+        collision->origin.rotation.x,
+        collision->origin.rotation.y,
+        collision->origin.rotation.z,
+        collision->origin.rotation.w);
+    collision->origin.position.x = global_pose.p.x();
+    collision->origin.position.y = global_pose.p.y();
+    collision->origin.position.z = global_pose.p.z();
 
-    KDL::Frame collision_global_pose;
-    double x, y, z, w;
-
-    collision_global_pose = getLinkFrame() * toKdl(collision->origin);
-    collision_global_pose.M.GetQuaternion(x, y, z, w);
-
-    collision->origin.position.x = collision_global_pose.p.x();
-    collision->origin.position.y = collision_global_pose.p.y();
-    collision->origin.position.z = collision_global_pose.p.z();
-    collision->origin.rotation.w = w;
-    collision->origin.rotation.x = x;
-    collision->origin.rotation.y = y;
-    collision->origin.rotation.z = z;
-
-    link_collisions_.push_back(*collision.get());
+    link_collisions_.emplace_back(*collision);
 }
 
 /* Subtracting the pointcloud using this method is not efficient because it creates a convex hull for the entire robot.
