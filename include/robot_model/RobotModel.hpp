@@ -64,9 +64,11 @@ namespace robot_model
     class RobotModel
     {
     public:
-        RobotModel(RobotModelConfig robot_model_config, double link_padding = 1.00);
+        RobotModel(RobotModelConfig &robot_model_config, double link_padding = 1.00);
 
         bool initialization();
+
+        bool reinitialization(RobotModelConfig &robot_model_config);
 
         bool getPlanningGroupJointInformation(const std::string planning_group_name, std::vector<std::pair<std::string, urdf::Joint>> &planning_groups_joints,
                                               std::vector<std::string> &planning_group_joints_name);
@@ -247,6 +249,8 @@ namespace robot_model
         collision_detection::AbstractCollisionPtr robot_collision_detector_, world_collision_detector_;
 
         bool initialiseURDFandSRDF();
+
+        bool reinitialiseSRDF(RobotModelConfig &robot_model_config);
 
         void dfsTraversing(std::string start_link_name, std::vector<std::string> &visited_links);
 
