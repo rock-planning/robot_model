@@ -80,12 +80,12 @@ namespace robot_model
 
         return true;
     }
+    
 
-    bool RobotModel::reinitialiseSRDF(RobotModelConfig &robot_model_config)
+    bool RobotModel::reinitialization()
     {
+        // initialse srdf
         bool srdf_ok_ = false;
-        srdf_file_abs_path_ = robot_model_config.srdf_file;
-        planning_group_name_ = robot_model_config.planning_group_name;
 
         srdf_model_.reset(new srdf::Model());
 
@@ -100,20 +100,6 @@ namespace robot_model
         // get base and tip frame
         if (!getPlanningGroup(planning_group_name_, base_frame_, tip_frame_, kdl_chain_))
             return false;
-
-        return true;
-    }
-
-    bool RobotModel::reinitialization(RobotModelConfig &robot_model_config)
-    {
-        // initialse urdf and srdf
-        bool res = reinitialiseSRDF(robot_model_config);
-
-        if (!res)
-        {
-            LOG_ERROR("[RobotModel] Robot model re-initialisation failed");
-            return false;
-        }
 
         if (!initializeLinksCollisions())
             return false;

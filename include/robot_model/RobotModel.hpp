@@ -68,7 +68,7 @@ namespace robot_model
 
         bool initialization();
 
-        bool reinitialization(RobotModelConfig &robot_model_config);
+        bool reinitialization();
 
         bool getPlanningGroupJointInformation(const std::string planning_group_name, std::vector<std::pair<std::string, urdf::Joint>> &planning_groups_joints,
                                               std::vector<std::string> &planning_group_joints_name);
@@ -146,6 +146,8 @@ namespace robot_model
         std::string getURDFfileAbsolutePath() { return urdf_file_abs_path_; };
 
         std::string getSRDFfileAbsolutePath() { return srdf_file_abs_path_; }
+
+        inline void setSRDFfileAbsolutePath(std::string &path) { srdf_file_abs_path_ = path; }
 
         inline void setRobotCollisionDetector(collision_detection::AbstractCollisionPtr collision_detector) { robot_collision_detector_ = collision_detector; }
 
@@ -249,8 +251,6 @@ namespace robot_model
         collision_detection::AbstractCollisionPtr robot_collision_detector_, world_collision_detector_;
 
         bool initialiseURDFandSRDF();
-
-        bool reinitialiseSRDF(RobotModelConfig &robot_model_config);
 
         void dfsTraversing(std::string start_link_name, std::vector<std::string> &visited_links);
 
