@@ -64,9 +64,11 @@ namespace robot_model
     class RobotModel
     {
     public:
-        RobotModel(RobotModelConfig robot_model_config, double link_padding = 1.00);
+        RobotModel(RobotModelConfig &robot_model_config, double link_padding = 1.00);
 
         bool initialization();
+
+        bool reinitialization();
 
         bool getPlanningGroupJointInformation(const std::string planning_group_name, std::vector<std::pair<std::string, urdf::Joint>> &planning_groups_joints,
                                               std::vector<std::string> &planning_group_joints_name);
@@ -144,6 +146,8 @@ namespace robot_model
         std::string getURDFfileAbsolutePath() { return urdf_file_abs_path_; };
 
         std::string getSRDFfileAbsolutePath() { return srdf_file_abs_path_; }
+
+        inline void setSRDFfileAbsolutePath(std::string &path) { srdf_file_abs_path_ = path; }
 
         inline void setRobotCollisionDetector(collision_detection::AbstractCollisionPtr collision_detector) { robot_collision_detector_ = collision_detector; }
 

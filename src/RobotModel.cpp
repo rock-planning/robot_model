@@ -16,7 +16,7 @@ namespace robot_model
 
     /////////////////////////////////////////////////End of out of class members and variables////////////////////////////////////
 
-    RobotModel::RobotModel(RobotModelConfig robot_model_config, double link_padding)
+    RobotModel::RobotModel(RobotModelConfig &robot_model_config, double link_padding)
     {
         urdf_file_abs_path_ = robot_model_config.urdf_file;
         srdf_file_abs_path_ = robot_model_config.srdf_file;
@@ -70,12 +70,38 @@ namespace robot_model
 
         if (!kdl_parser::treeFromFile(urdf_file_abs_path_, kdl_tree_))
         {
-            LOG_ERROR("[RobotModel] Error while initialising kdl treey");
+            LOG_ERROR("[RobotModel] Error while initialising kdl tree");
             return false;
         }
 
         // get base and tip frame
         if (!getPlanningGroup(planning_group_name_, base_frame_, tip_frame_, kdl_chain_))
+            return false;
+
+        return true;
+    }
+    
+
+    bool RobotModel::reinitialization()
+    {
+        // initialse srdf
+        bool srdf_ok_ = false;
+
+        srdf_model_.reset(new srdf::Model());
+
+        srdf_ok_ = srdf_model_->initFile(*urdf_model_, srdf_file_abs_path_);
+
+        if (!srdf_ok_)
+        {
+            LOG_ERROR("[RobotModel] Error while initialising srdf model");
+            return srdf_ok_;
+        }
+
+        // get base and tip frame
+        if (!getPlanningGroup(planning_group_name_, base_frame_, tip_frame_, kdl_chain_))
+            return false;
+
+        if (!initializeLinksCollisions())
             return false;
 
         return true;
@@ -96,6 +122,7 @@ namespace robot_model
         for (std::map<std::string, urdf::JointSharedPtr>::iterator it = urdf_model_->joints_.begin(); it != urdf_model_->joints_.end(); it++)
         {
             LOG_DEBUG("[RobotModel] Visiting the joint:%s and it is of type %d", it->first.c_str(), it->second->type);
+            // std::cout << "[RobotModel] Visiting the joint: " << it->first.c_str() << " and it is of type " << it->second->type << std::endl;
 
             if ((it->second->type != urdf::Joint::FIXED) && (it->second->type != urdf::Joint::UNKNOWN) && (it->second->type != urdf::Joint::CONTINUOUS))
             {
